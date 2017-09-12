@@ -4,7 +4,13 @@
   "description": "Driver based file system built on top of flydrive",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard",
+    "pretest": "npm run lint",
+    "posttest": "npm run coverage",
+    "test:local": "FORCE_COLOR=true node bin/index.js --local",
+    "test": "nyc npm run test:local",
+    "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "fs",
@@ -19,15 +25,21 @@
   "devDependencies": {
     "@adonisjs/fold": "^4.0.4",
     "@adonisjs/sink": "^1.0.13",
+    "coveralls": "^2.13.1",
     "cz-conventional-changelog": "^2.0.0",
     "japa": "^1.0.4",
     "japa-cli": "^1.0.1",
+    "nyc": "^11.2.1",
+    "semver": "^5.4.1",
     "standard": "^10.0.3"
   },
   "standard": {
     "globals": [
       "use"
     ]
+  },
+  "nyc": {
+    "exclude": ["bin"]
   },
   "config": {
     "commitizen": {
