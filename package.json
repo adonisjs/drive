@@ -1,0 +1,37 @@
+{
+  "name": "@adonisjs/drive",
+  "version": "1.0.0",
+  "description": "Driver based file system built on top of flydrive",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fs",
+    "aws",
+    "s3"
+  ],
+  "author": "virk",
+  "license": "MIT",
+  "dependencies": {
+    "@slynova/flydrive": "^0.1.3"
+  },
+  "devDependencies": {
+    "@adonisjs/fold": "^4.0.4",
+    "@adonisjs/sink": "^1.0.13",
+    "cz-conventional-changelog": "^2.0.0",
+    "japa": "^1.0.4",
+    "japa-cli": "^1.0.1",
+    "standard": "^10.0.3"
+  },
+  "standard": {
+    "globals": [
+      "use"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
