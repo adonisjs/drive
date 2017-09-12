@@ -1,5 +1,7 @@
 # Adonis Drive 💾
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/adonisjs/adonis-drive.svg)](https://greenkeeper.io/)
+
 This repo makes it easier to interact with files using multiple inbuilt drivers.
 
 It is built on top of [node-flydrive](https://github.com/Slynova-Org/node-flydrive) and API is 100% compatible with it.
