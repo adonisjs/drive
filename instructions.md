@@ -1,6 +1,6 @@
 ## Registering provider
 
-Make sure to register the provider inside `start/app.js` file.
+Make sure to register the provider inside `bootstrap/app.js` file.
 
 ```js
 const providers = [
