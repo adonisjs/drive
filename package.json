@@ -20,14 +20,14 @@
   "author": "virk",
   "license": "MIT",
   "dependencies": {
-    "@slynova/flydrive": "^0.1.3"
+    "@slynova/flydrive": "^0.1.5"
   },
   "devDependencies": {
     "@adonisjs/fold": "^4.0.4",
     "@adonisjs/sink": "^1.0.13",
-    "coveralls": "^2.13.1",
-    "cz-conventional-changelog": "^2.0.0",
-    "japa": "^1.0.4",
+    "coveralls": "^3.0.0",
+    "cz-conventional-changelog": "^2.1.0",
+    "japa": "^1.0.5",
     "japa-cli": "^1.0.1",
     "nyc": "^11.2.1",
     "semver": "^5.4.1",
@@ -39,7 +39,9 @@
     ]
   },
   "nyc": {
-    "exclude": ["bin"]
+    "exclude": [
+      "bin"
+    ]
   },
   "config": {
     "commitizen": {
