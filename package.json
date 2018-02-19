@@ -31,7 +31,7 @@
     "japa-cli": "^1.0.1",
     "nyc": "^11.2.1",
     "semver": "^5.4.1",
-    "standard": "^10.0.3"
+    "standard": "^11.0.0"
   },
   "standard": {
     "globals": [
