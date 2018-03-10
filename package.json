@@ -20,7 +20,8 @@
   "author": "virk",
   "license": "MIT",
   "dependencies": {
-    "@slynova/flydrive": "^0.1.5"
+    "@slynova/flydrive": "^0.1.5",
+    "aws-sdk": "^2.207.0"
   },
   "devDependencies": {
     "@adonisjs/fold": "^4.0.4",
