@@ -3,6 +3,13 @@
   "version": "1.0.3",
   "description": "Driver based file system built on top of flydrive",
   "main": "index.js",
+  "files": [
+    "examples",
+    "providers",
+    "src",
+    "instructions.js",
+    "instructions.md"
+  ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
