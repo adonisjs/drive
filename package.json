@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/drive",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Driver based file system built on top of flydrive",
   "main": "index.js",
   "files": [
