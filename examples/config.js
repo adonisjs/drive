@@ -43,6 +43,23 @@ module.exports = {
       secret: Env.get('S3_SECRET'),
       bucket: Env.get('S3_BUCKET'),
       region: Env.get('S3_REGION')
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | DigitalOcean Spaces
+    |--------------------------------------------------------------------------
+    |
+    | Spaces disk interacts with a bucket s3 on DigitalOcean
+    |
+    */
+    spaces: {
+      driver: 's3',
+      key: Env.get('SPACES_KEY'),
+      secret: Env.get('SPACES_SECRET'),
+      endpoint: Env.get('SPACES_ENDPOINT'),
+      bucket: Env.get('SPACES_BUCKET'),
+      region: Env.get('SPACES_REGION'),
     }
   }
 }
