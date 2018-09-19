@@ -59,7 +59,7 @@ module.exports = {
       secret: Env.get('SPACES_SECRET'),
       endpoint: Env.get('SPACES_ENDPOINT'),
       bucket: Env.get('SPACES_BUCKET'),
-      region: Env.get('SPACES_REGION'),
+      region: Env.get('SPACES_REGION')
     }
   }
 }
