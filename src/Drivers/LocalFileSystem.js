@@ -1,12 +1,11 @@
 'use strict'
 
-const BaseLocalFileSystem = require('@slynova/flydrive/src/Drivers/LocalFileSystem')
 const { FileNotFound } = require('@slynova/flydrive/src/Exceptions')
 const fs = require('fs-extra')
 const mime = require('mime-types')
 const { extname } = require('path')
 
-class LocalFileSystem extends BaseLocalFileSystem {
+module.exports = (LocalFileSystem) => class extends LocalFileSystem {
   driver () {
 		return fs
 	}
@@ -48,5 +47,3 @@ class LocalFileSystem extends BaseLocalFileSystem {
     }
   }
 }
-
-module.exports = LocalFileSystem

@@ -1,9 +1,8 @@
 'use strict'
 
-const BaseAwsS3 = require('@slynova/flydrive/src/Drivers/AwsS3')
 const { FileNotFound } = require('@slynova/flydrive/src/Exceptions')
 
-class AwsS3 extends BaseAwsS3 {
+module.exports = (AwsS3) => class extends AwsS3 {
   driver () {
     return this.s3
   }
@@ -58,5 +57,3 @@ class AwsS3 extends BaseAwsS3 {
     }
   }
 }
-
-module.exports = AwsS3

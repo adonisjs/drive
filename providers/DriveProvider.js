@@ -35,8 +35,23 @@ class DriveProvider extends ServiceProvider {
   }
 
   $extendDrivers () {
-    this.app.extend('Adonis/Addons/Drive', 'local', () => require('../src/Drivers/LocalFileSystem'))
-    this.app.extend('Adonis/Addons/Drive', 's3', () => require('../src/Drivers/AwsS3'))
+    const Drivers = require('@slynova/flydrive/src/Drivers')
+
+    const pathMap = {
+      local: '../src/Drivers/LocalFileSystem',
+      s3: '../src/Drivers/AwsS3',
+      spaces: '../src/Drivers/AwsS3'
+    }
+
+    for (const name of Object.keys(pathMap)) {
+      this.app.extend('Adonis/Addons/Drive', name, () => new Proxy(() => {}, {
+        construct (_, args) {
+          const DriverClass = require(pathMap[name])(Drivers[name])
+
+          return new DriverClass(...args)
+        }
+      }))
+    }
   }
   
   register () {
