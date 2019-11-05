@@ -44,7 +44,7 @@ class DriveProvider extends ServiceProvider {
     }
 
     for (const name of Object.keys(pathMap)) {
-      this.app.extend('Adonis/Addons/Drive', name, () => new Proxy(() => {}, {
+      this.app.extend('Adonis/Addons/Drive', name, () => new Proxy(function() {}, {
         construct (_, args) {
           const DriverClass = require(pathMap[name])(Drivers[name])
 
