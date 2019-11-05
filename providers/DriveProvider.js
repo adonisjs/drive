@@ -14,7 +14,7 @@ const FlyDrive = require('@slynova/flydrive')
 const DriveManager = require('../src/DriveManager')
 
 class DriveProvider extends ServiceProvider {
-  register () {
+  $registerManager () {
     this.app.singleton('Adonis/Addons/Drive', (app) => {
       const config = app.use('Adonis/Src/Config').get('drive')
       const flyDriverInstance = new FlyDrive(config)
@@ -32,6 +32,16 @@ class DriveProvider extends ServiceProvider {
 
     this.app.alias('Adonis/Addons/Drive', 'Drive')
     this.app.manager('Adonis/Addons/Drive', DriveManager)
+  }
+
+  $extendDrivers () {
+    this.app.extend('Adonis/Addons/Drive', 'local', () => require('../src/Drivers/LocalFileSystem'))
+    this.app.extend('Adonis/Addons/Drive', 's3', () => require('../src/Drivers/AwsS3'))
+  }
+  
+  register () {
+    this.$registerManager()
+    this.$extendDrivers()
   }
 }
 
