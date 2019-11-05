@@ -30,13 +30,12 @@ module.exports = (LocalFileSystem) => class extends LocalFileSystem {
   }
 
   async *list (location, recursive = false) {
-    const dir = this._fullPath(location)
-    const dirents = await fs.readdir(dir, { withFileTypes: true })
+    const dirents = await fs.readdir(this._fullPath(location), { withFileTypes: true })
 
     for (const dirent of dirents) {
       const res = {
         type: dirent.isDirectory() ? 'dir' : 'file',
-        path: resolve(dir, dirent.name)
+        path: `${location}/${dirent.name}`.replace(/^\/+|\/+$/g, '')
       }
 
       yield res
