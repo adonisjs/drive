@@ -64,7 +64,7 @@ class DriveProvider extends ServiceProvider {
   }
 
   boot () {
-    const Drive = this.use.use('Adonis/Addons/Drive')
+    const Drive = this.app.use('Adonis/Addons/Drive')
     const { BriskRoute } = this.app.use('Adonis/Src/Route')
 
     BriskRoute.macro('storage', function (disk) {
