@@ -29,7 +29,9 @@
   "author": "virk",
   "license": "MIT",
   "dependencies": {
-    "@slynova/flydrive": "^0.3.1"
+    "@slynova/flydrive": "^0.3.1",
+    "destroy": "^1.0.4",
+    "on-finished": "^2.3.0"
   },
   "devDependencies": {
     "@adonisjs/fold": "^4.0.9",
