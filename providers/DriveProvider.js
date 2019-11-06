@@ -12,6 +12,7 @@
 const { ServiceProvider } = require('@adonisjs/fold')
 const FlyDrive = require('@slynova/flydrive')
 const DriveManager = require('../src/DriveManager')
+const path = require('path')
 
 class DriveProvider extends ServiceProvider {
   $registerManager () {
@@ -53,13 +54,13 @@ class DriveProvider extends ServiceProvider {
     }
   }
 
-  $registerController () {
-    this.app.bind('Adonis/Addons/Drive/StorageController', () => require('../src/Controllers/StorageController'))
+  $registerControllers () {
+    this.app.autoload(path.join(__dirname, '..', 'src', 'Controllers'), 'Adonis/Addons/Drive/Controllers')
   }
   
   register () {
     this.$registerManager()
-    this.$registerController()
+    this.$registerControllers()
     this.$extendDrivers()
   }
 
@@ -71,7 +72,7 @@ class DriveProvider extends ServiceProvider {
       this.routePath += '/:path+'
   
       return this.setHandler(
-        '@provider:Adonis/Addons/Drive/StorageController.download',
+        '@provider:Adonis/Addons/Drive/Controllers/StorageController.download',
         ['GET', 'HEAD']
       ).middleware((ctx, next) => {
         ctx.$disk = Drive.disk(disk)
