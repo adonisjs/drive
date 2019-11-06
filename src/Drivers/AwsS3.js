@@ -7,6 +7,14 @@ module.exports = (AwsS3) => class extends AwsS3 {
     return this.s3
   }
 
+  getStream (location, { start, end, ...params } = {}) {
+    if (typeof (start) === 'number' && typeof (end) === 'number') {
+      params['Range'] = `bytes=${start}-${end}`
+    }
+
+    return super.getStream(location, params)
+  }
+
   async stat (location) {
     const params = { Key: location, Bucket: this._bucket.pull() }
 

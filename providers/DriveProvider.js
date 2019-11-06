@@ -47,16 +47,37 @@ class DriveProvider extends ServiceProvider {
       this.app.extend('Adonis/Addons/Drive', name, () => new Proxy(function() {}, {
         construct (_, args) {
           const DriverClass = require(pathMap[name])(Drivers[name])
-
           return new DriverClass(...args)
         }
       }))
     }
   }
+
+  $registerController () {
+    this.app.bind('Adonis/Addons/Drive/StorageController', () => require('../src/Controllers/StorageController'))
+  }
   
   register () {
     this.$registerManager()
+    this.$registerController()
     this.$extendDrivers()
+  }
+
+  boot () {
+    const Drive = this.use.use('Adonis/Addons/Drive')
+    const { BriskRoute } = this.app.use('Adonis/Src/Route')
+
+    BriskRoute.macro('storage', function (disk) {
+      this.routePath += '/:path+'
+  
+      return this.setHandler(
+        '@provider:Adonis/Addons/Drive/StorageController.download',
+        ['GET', 'HEAD']
+      ).middleware((ctx, next) => {
+        ctx.$disk = Drive.disk(disk)
+        return next()
+      })
+    })
   }
 }
 
