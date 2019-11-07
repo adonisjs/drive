@@ -68,7 +68,7 @@ class DriveProvider extends ServiceProvider {
     const Drive = this.app.use('Adonis/Addons/Drive')
     const { BriskRoute } = this.app.use('Adonis/Src/Route')
 
-    BriskRoute.macro('storage', function (disk) {
+    BriskRoute.macro('download', function (disk) {
       this.routePath += '/:path+'
   
       return this.setHandler(
@@ -76,6 +76,17 @@ class DriveProvider extends ServiceProvider {
         ['GET', 'HEAD']
       ).middleware((ctx, next) => {
         ctx.$disk = Drive.disk(disk)
+        return next()
+      })
+    })
+
+    BriskRoute.macro('upload', function (disk, name, rules = {}, location) {
+      return this.setHandler(
+        '@provider:Adonis/Addons/Drive/Controllers/StorageController.upload',
+        ['POST']
+      ).middleware((ctx, next) => {
+        ctx.$disk = Drive.disk(disk)
+        ctx.$options = { name, rules, location }
         return next()
       })
     })

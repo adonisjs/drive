@@ -2,8 +2,77 @@
 
 const onFinished = require('on-finished')
 const destroy = require('destroy')
+const { PassThrough } = require('stream')
+const imageSize = require('image-size')
+const DEFAULT_LIMIT = 128 * 1024
+
+function createValidationStream (file) {
+  const { size, width, height } = file.validationOptions
+
+  const stream = file.stream.pipe(new PassThrough()).on('data', (chunk) => {
+    file.size += chunk.length
+
+    if (size && file.size > size) {
+      file.stream.emit('error', new Error(`File size should be less than ${size}`))
+    }
+  })
+
+  if (width || height) {
+    let buffer = Buffer.alloc(0)
+    let dimensions, error
+
+    stream.on('data', (chunk) => {
+      if (!dimensions) {
+        buffer = Buffer.concat([buffer, chunk], file.size)
+
+        try {
+          dimensions = imageSize(buffer)
+        } catch (err) {
+          error = err
+        }
+
+        if (dimensions) {
+          if ((width && dimensions.width > width) || (height && dimensions.height > height)) {
+            file.stream.emit('error', new Error(`Image size should be no more than ${width}x${height}`))
+          }
+        } else if (file.size > DEFAULT_LIMIT) {
+          file.stream.emit('error', new Error('Reached the limit before detecting image type.'))
+        }
+      }
+    }).on('finish', () => {
+      if (dimensions) {
+        return
+      }
+
+      file.stream.emit('error', buffer.length === 0 ? new Error('No bytes received.') : error)
+    })
+  }
+
+  return stream
+}
 
 class StorageController {
+  async upload (ctx) {
+    ctx.request.multipart.file(ctx.$options.name, ctx.$options.rules, async (file) => {
+      // run validation rules
+      await file.runValidations()
+
+      // catches validation errors, if any and then throw exception
+      const error = file.error()
+  
+      if (error) {
+        throw error
+      }
+
+      const location = ctx.$options.location ? ctx.$options.location({ ctx, file }) : `${ctx.$options.name}/${file.clientName}`
+
+      // upload file to s3
+      await ctx.$disk.put(location, createValidationStream(file), { ContentType: file.headers['content-type'] })
+    })
+
+    await ctx.request.multipart.process()
+  }
+  
   async download ({ $disk, params, request, response }) {
     const path = params.path.join('/')
     const stat = await $disk.stat(path)
