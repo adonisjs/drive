@@ -10,48 +10,18 @@
 */
 
 const { ServiceProvider } = require('@adonisjs/fold')
-const FlyDrive = require('@slynova/flydrive')
-const DriveManager = require('../src/DriveManager')
+const { DriveManager, StorageManager } = require('../src/DriveManager')
 const path = require('path')
 
 class DriveProvider extends ServiceProvider {
   $registerManager () {
     this.app.singleton('Adonis/Addons/Drive', (app) => {
       const config = app.use('Adonis/Src/Config').get('drive')
-      const flyDriverInstance = new FlyDrive(config)
-      const { drivers } = DriveManager
-
-      /**
-       * Registering extended drivers with flydrive
-       */
-      Object.keys(drivers).forEach((driver) => {
-        flyDriverInstance.extend(driver, drivers[driver])
-      })
-
-      return flyDriverInstance
+      return new StorageManager(config)
     })
 
     this.app.alias('Adonis/Addons/Drive', 'Drive')
     this.app.manager('Adonis/Addons/Drive', DriveManager)
-  }
-
-  $extendDrivers () {
-    const Drivers = require('@slynova/flydrive/src/Drivers')
-
-    const pathMap = {
-      local: '../src/Drivers/LocalFileSystem',
-      s3: '../src/Drivers/AwsS3',
-      spaces: '../src/Drivers/AwsS3'
-    }
-
-    for (const name of Object.keys(pathMap)) {
-      this.app.extend('Adonis/Addons/Drive', name, () => new Proxy(function() {}, {
-        construct (_, args) {
-          const DriverClass = require(pathMap[name])(Drivers[name])
-          return new DriverClass(...args)
-        }
-      }))
-    }
   }
 
   $registerControllers () {
@@ -61,7 +31,6 @@ class DriveProvider extends ServiceProvider {
   register () {
     this.$registerManager()
     this.$registerControllers()
-    this.$extendDrivers()
   }
 
   boot () {

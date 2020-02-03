@@ -1,21 +1,23 @@
 'use strict'
 
-const onFinished = require('on-finished')
-const destroy = require('destroy')
-const { PassThrough } = require('stream')
+const { PassThrough, pipeline } = require('stream')
 const imageSize = require('image-size')
 const DEFAULT_LIMIT = 128 * 1024
 
 function createValidationStream (file) {
   const { size, width, height } = file.validationOptions
 
-  const stream = file.stream.pipe(new PassThrough()).on('data', (chunk) => {
-    file.size += chunk.length
+  const stream = file.stream.pipe(new PassThrough())
+    .on('error', (err) => {
+      file.stream.emit('error', err)
+    })
+    .on('data', (chunk) => {
+      file.size += chunk.length
 
-    if (size && file.size > size) {
-      file.stream.emit('error', new Error(`File size should be less than ${size}`))
-    }
-  })
+      if (size && file.size > size) {
+        stream.emit('error', new Error(`File size should be less than ${size}`))
+      }
+    })
 
   if (width || height) {
     let buffer = Buffer.alloc(0)
@@ -33,10 +35,10 @@ function createValidationStream (file) {
 
         if (dimensions) {
           if ((width && dimensions.width > width) || (height && dimensions.height > height)) {
-            file.stream.emit('error', new Error(`Image size should be no more than ${width}x${height}`))
+            stream.emit('error', new Error(`Image size should be no more than ${width}x${height}`))
           }
         } else if (file.size > DEFAULT_LIMIT) {
-          file.stream.emit('error', new Error('Reached the limit before detecting image type.'))
+          stream.emit('error', new Error('Reached the limit before detecting image type.'))
         }
       }
     }).on('finish', () => {
@@ -44,7 +46,7 @@ function createValidationStream (file) {
         return
       }
 
-      file.stream.emit('error', buffer.length === 0 ? new Error('No bytes received.') : error)
+      stream.emit('error', buffer.length === 0 ? new Error('No bytes received.') : error)
     })
   }
 
@@ -60,9 +62,13 @@ class StorageController {
       // catches validation errors, if any and then throw exception
       const error = file.error()
   
-      if (error) {
+      if (error && Object.keys(error).length) {
         throw error
       }
+
+      file.stream.on('error', (err) => {
+        throw err
+      })
 
       const location = ctx.$options.location ? ctx.$options.location({ ctx, file }) : `${ctx.$options.name}/${file.clientName}`
 
@@ -126,33 +132,18 @@ class StorageController {
 
     return new Promise((resolve) => {
       const stream = $disk.getStream(path, options)
-      let finished = false
-  
-      stream.on('error', (error) => {
-        if (finished) {
-          return
+
+      pipeline(stream, response.response, (error) => {
+        if (error) {
+          if (error.code === 'ENOENT') {
+            response.status(404).send('File not found')
+          } else {
+            response.status(500).send('Cannot process file')
+          }
         }
 
-        finished = true
-        destroy(stream)
-
-        if (error.code === 'ENOENT') {
-          response.status(404).send('File not found')
-        } else {
-          response.status(500).send('Cannot process file')
-        }
-        
         resolve()
       })
-
-      stream.on('end', resolve)
-  
-      onFinished(response.response, () => {
-        finished = true
-        destroy(stream)
-      })
-  
-      stream.pipe(response.response)
     })
   }
 }

@@ -25,8 +25,8 @@ module.exports = {
     |
     */
     local: {
-      root: Helpers.tmpPath(),
-      driver: 'local'
+      driver: 'local',
+      root: Helpers.tmpPath()
     },
 
     /*
