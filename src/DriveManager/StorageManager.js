@@ -1,7 +1,7 @@
 'use strict'
 
 const DriveManager = require('./DriveManager')
-const CE = require('./Exceptions')
+const CE = require('../Exceptions')
 
 const proxyHandler = {
   get (target, name) {
