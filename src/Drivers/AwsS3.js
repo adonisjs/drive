@@ -210,7 +210,7 @@ class AwsS3 {
         }
 
         if (this._url) {
-          return resolve(Object.assign(new URL(url), new URL(this._url)).href)
+          return resolve(Object.assign(new URL(url), { hostname: new URL(this._url).hostname }).href)
         }
 
         return resolve(url)
