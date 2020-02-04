@@ -7,10 +7,7 @@ const DEFAULT_LIMIT = 128 * 1024
 function createValidationStream (file) {
   const { size, width, height } = file.validationOptions
 
-  const stream = file.stream.pipe(new PassThrough())
-    .on('error', (err) => {
-      file.stream.emit('error', err)
-    })
+  const stream = new PassThrough()
     .on('data', (chunk) => {
       file.size += chunk.length
 
@@ -55,25 +52,31 @@ function createValidationStream (file) {
 
 class StorageController {
   async upload (ctx) {
-    ctx.request.multipart.file(ctx.$options.name, ctx.$options.rules, async (file) => {
-      // run validation rules
-      await file.runValidations()
-
-      // catches validation errors, if any and then throw exception
-      const error = file.error()
+    ctx.request.multipart.file(ctx.$options.name, ctx.$options.rules, (file) => {
+      return new Promise((resolve, reject) => {
+        file.runValidations().then(() => {
+          const error = file.error()
   
-      if (error && Object.keys(error).length) {
-        throw error
-      }
+          if (error && Object.keys(error).length) {
+            // file.stream.destroy()
+            return reject(error)
+          }
 
-      file.stream.on('error', (err) => {
-        throw err
+          const location = ctx.$options.location ? ctx.$options.location({ ctx, file }) : `${ctx.$options.name}/${file.clientName}`
+          
+          const stream = createValidationStream(file)
+          const promise = ctx.$disk.upload(location, stream, { ContentType: file.headers['content-type'] })
+
+          pipeline(file.stream, stream, (err) => {
+            if (err) {
+              reject(err)
+              promise.cancel()
+            }
+          })
+
+          promise.then(resolve, reject)
+        })
       })
-
-      const location = ctx.$options.location ? ctx.$options.location({ ctx, file }) : `${ctx.$options.name}/${file.clientName}`
-
-      // upload file to s3
-      await ctx.$disk.put(location, createValidationStream(file), { ContentType: file.headers['content-type'] })
     })
 
     await ctx.request.multipart.process()

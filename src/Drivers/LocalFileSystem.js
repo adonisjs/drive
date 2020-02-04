@@ -16,6 +16,43 @@ function isReadableStream (stream) {
     && stream.readable !== false
 }
 
+function createWriteStream (file, options = {}) {
+  // if fd is set with an actual number, file is created, hence directory is too
+  if (options.fd) {
+    return fs.createWriteStream(file, options)
+  } else {
+    // this hacks the WriteStream constructor from calling open()
+    options.fd = -1
+  }
+  
+  let dirExists = false
+  const dir = path.dirname(file)
+  const _fs = options.fs || fs
+  const ws = new _fs.WriteStream(file, options)
+  const oldOpen = ws.open
+  
+  ws.open = function () {
+    // set actual fd
+    ws.fd = null
+
+    if (dirExists) {
+      return oldOpen.call(ws)
+    }
+
+    // this only runs once on first write
+    fs.ensureDir(dir).then(() => {
+      dirExists = true
+      oldOpen.call(ws)
+    }).catch((err) => {
+      ws.destroy(err)
+    })
+  }
+
+  ws.open()
+
+  return ws
+}
+
 class LocalFileSystem {
   constructor (config) {
     this.root = config.root
@@ -40,24 +77,27 @@ class LocalFileSystem {
 		return fs
   }
   
-  async upload (location, stream, options = {}) {
-    const fullPath = this._fullPath(location)
-    await fs.ensureDir(path.dirname(fullPath))
-    
+  upload (location, stream, options = {}) {
     return new PCancelable((resolve, reject, onCancel) => {
-      const ws = fs.createWriteStream(fullPath, options)
-
-      pipeline(stream, ws, (err) => {
-        if (err) {
-          return reject(this._handleError(err, location))
-        }
-        
-        return resolve()
-      })
+      const fullPath = this._fullPath(location)
+      const ws = createWriteStream(fullPath, options)
 
       onCancel(() => {
         ws.destroy()
-        fs.unlink(ws.path).catch(reject)
+
+        if (typeof ws.fd !== 'number') {
+          ws.once('open', () => fs.unlink(ws.path, () => {}))
+        } else {
+          fs.unlink(ws.path, () => {})
+        }
+      })
+
+      pipeline(stream, ws, (err) => {        
+        if (err) {
+          return reject(this._handleError(err, location))
+        }
+
+        return resolve()
       })
     })
   }
@@ -117,7 +157,7 @@ class LocalFileSystem {
   async put (location, content, options = {}) {
     if (isReadableStream(content)) {
       return new Promise((resolve, reject) => {
-        const ws = fs.createWriteStream(this._fullPath(location), options)
+        const ws = createWriteStream(this._fullPath(location), options)
 
         pipeline(content, ws, (err) => {
           if (err) {
