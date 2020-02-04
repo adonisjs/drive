@@ -3,6 +3,7 @@
 const S3 = require('aws-sdk/clients/s3')
 const PCancelable = require('p-cancelable')
 const { FileNotFound, UnknownException } = require('../Exceptions')
+const { URL } = require('url')
 
 class AwsS3 {
   constructor (config) {
@@ -13,6 +14,7 @@ class AwsS3 {
     }, config))
 
     this._bucket = config.bucket
+    this._url = config.url
   }
 
   _handleError (err, path) {
@@ -85,7 +87,7 @@ class AwsS3 {
 
   async *list (location, recursive = false) {
     const params = {
-      Bucket: this._bucket.pull(),
+      Bucket: this._bucket,
       Prefix: location.replace(/^\/+|\/+$/g, '') + '/'
     }
 
@@ -150,7 +152,7 @@ class AwsS3 {
   delete (location, params = {}) {
     return new Promise((resolve, reject) => {
       const clonedParams = Object.assign({}, params, {
-        Bucket: this._bucket.pull(),
+        Bucket: this._bucket,
         Key: location,
       })
 
@@ -180,6 +182,10 @@ class AwsS3 {
   }
 
   getUrl (location) {
+    if (this._url) {
+      return this._url.replace(/\/$/, '') + '/' + location.replace(/^\/+/, '')
+    }
+    
     const bucket = this._bucket
     const { href } = this.s3.endpoint
 
@@ -201,6 +207,10 @@ class AwsS3 {
       this.s3.getSignedUrl('getObject', clonedParams, (err, url) => {
         if (err) {
           return reject(this._handleError(err, location))
+        }
+
+        if (this._url) {
+          return resolve(Object.assign(new URL(url), new URL(this._url)).href)
         }
 
         return resolve(url)
