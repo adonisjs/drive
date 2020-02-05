@@ -49,16 +49,14 @@ class DriveProvider extends ServiceProvider {
       })
     })
 
-    BriskRoute.macro('upload', function (disk, name, rules = {}, location) {
-      return this.setHandler(
-        '@provider:Adonis/Addons/Drive/Controllers/StorageController.upload',
-        ['POST']
-      ).middleware((ctx, next) => {
-        ctx.$disk = Drive.disk(disk)
-        ctx.$options = { name, rules, location }
-        return next()
+    try {
+      const uploadFiles = require('../src/Bindings/Request')
+      const Request = this.app.use('Adonis/Src/Request')
+
+      Request.macro('upload', function (disk, files) {
+        return uploadFiles(this, Drive.disk(disk), files)
       })
-    })
+    } catch (e) {}
   }
 }
 
