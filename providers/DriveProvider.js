@@ -53,7 +53,7 @@ class DriveProvider extends ServiceProvider {
       const uploadFiles = require('../src/Bindings/Request')
       const Request = this.app.use('Adonis/Src/Request')
 
-      Request.macro('upload', function (disk, files) {
+      Request.macro('upload', function (files, disk = '') {
         return uploadFiles(this, Drive.disk(disk), files)
       })
     } catch (e) {}
