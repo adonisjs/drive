@@ -5,7 +5,10 @@ const path = require('path')
 const PCancelable = require('p-cancelable')
 const { pipeline } = require('stream')
 const mime = require('mime-types')
-const { FileNotFound, PermissionMissing, UnknownException } = require('../Exceptions')
+const {
+  FileNotFound, PermissionMissing,
+  UnknownException, MethodNotSupported
+} = require('../Exceptions')
 
 function isReadableStream (stream) {
   return stream !== null
@@ -56,6 +59,7 @@ function createWriteStream (file, options = {}) {
 class LocalFileSystem {
   constructor (config) {
     this.root = config.root
+    this._url = config.url
   }
 
   _handleError (err, path) {
@@ -97,10 +101,22 @@ class LocalFileSystem {
           return reject(this._handleError(err, location))
         }
 
-        return resolve()
+        return resolve(this._url && this.getUrl(location))
       })
     })
   }
+
+  getUrl (location) {
+    if (this._url) {
+      return this._url.replace(/\/$/, '') + '/' + location.replace(/^\/+/, '')
+    }
+
+    throw MethodNotSupported.method('getUrl', 'local')
+  }
+
+  async getSignedUrl (location, { expiry = 900, ...params } = {}) {
+    return this.getUrl(location)
+  }  
   
   async stat (location) {
     try {

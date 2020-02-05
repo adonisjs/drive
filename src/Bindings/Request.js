@@ -68,7 +68,6 @@ module.exports = async function (request, disk, filesOptions) {
       return new Promise((resolve, reject) => {
         file.runValidations().then(() => {
           if (file.status === 'error') {
-            // file.stream.destroy()
             return reject(file.error())
           }
   

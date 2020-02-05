@@ -43,7 +43,7 @@ class AwsS3 {
           return reject(this._handleError(err, location))
         }
 
-        return resolve(data.Location)
+        return resolve(this.getUrl(data.Key))
       })
 
       onCancel(() => {
