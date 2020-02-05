@@ -71,7 +71,7 @@ module.exports = async function (request, disk, filesOptions) {
             return reject(file.error())
           }
   
-          const location = options.location ? options.location({ request, file }) : `${options.name}/${file.clientName}`
+          const location = options.location ? options.location({ request, file, fields: fields.get() }) : `${options.name}/${file.clientName}`
           
           const stream = createValidationStream(file)
           const promise = disk.upload(location, stream, { ContentType: file.headers['content-type'] })
@@ -93,6 +93,8 @@ module.exports = async function (request, disk, filesOptions) {
   }
 
   await request.multipart.process()
+
+  request.body = fields.get()
 
   return { disk, files: files.get(), fields: fields.get() }
 }
