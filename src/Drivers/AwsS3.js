@@ -42,7 +42,7 @@ class AwsS3 {
         if (err) {
           return reject(this._handleError(err, location))
         }
-
+  
         return resolve(this.getUrl(data.Key))
       })
 
