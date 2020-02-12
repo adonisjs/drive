@@ -13,9 +13,12 @@ function createValidationStream (file) {
       file.size += chunk.length
 
       if (size && file.size > size) {
-        file.setError(`File size should be less than ${size}`, 'size')
-        stream.emit('error', file.error())
+        stream.emit('bail', `File size should be less than ${size}`, 'size')
       }
+    })
+    .on('bail', (message, type = 'fatal') => {
+      file.setError(message, type)
+      stream.emit('error', file.error())
     })
 
   if (width || height) {
@@ -34,12 +37,10 @@ function createValidationStream (file) {
 
         if (dimensions) {
           if ((width && dimensions.width > width) || (height && dimensions.height > height)) {
-            file.setError(`Image dimensions should be no more than ${width}x${height}`, 'dimension')
-            stream.emit('error', file.error())
+            stream.emit('bail', `Image dimensions should be no more than ${width}x${height}`, 'dimension')
           }
         } else if (file.size > DEFAULT_LIMIT) {
-          file.setError('Reached the limit before detecting image type.', 'dimension')
-          stream.emit('error', file.error())
+          stream.emit('bail', 'Reached the limit before detecting image type.', 'dimension')
         }
       }
     }).on('finish', () => {
@@ -47,8 +48,7 @@ function createValidationStream (file) {
         return
       }
 
-      file.setError(buffer.length === 0 ? 'No bytes received.' : error && error.message, 'dimension')
-      stream.emit('error', file.error())
+      stream.emit('bail', buffer.length === 0 ? 'No bytes received.' : error && error.message)
     })
   }
 
@@ -84,7 +84,10 @@ module.exports = async function (request, disk, filesOptions) {
           })
   
           promise.then((url) => {
-            files.add(file.fieldName, url)
+            file.fileName = location
+            file.url = url
+            file.status = 'moved'
+            files.add(file.fieldName, file)
             resolve()
           }, reject)
         })
@@ -94,6 +97,7 @@ module.exports = async function (request, disk, filesOptions) {
 
   await request.multipart.process()
 
+  request._files = files.get()
   request.body = fields.get()
 
   return { disk, files: files.get(), fields: fields.get() }
