@@ -1,6 +1,7 @@
 'use strict'
 
 const S3 = require('aws-sdk/clients/s3')
+const CloudFront = require('aws-sdk/clients/cloudfront')
 const PCancelable = require('p-cancelable')
 const { FileNotFound, UnknownException } = require('../Exceptions')
 const { URL } = require('url')
@@ -9,12 +10,18 @@ class AwsS3 {
   constructor (config) {
     this.s3 = new S3(Object.assign({}, {
       accessKeyId: config.key,
-      secretAccessKey: config.secret,
-      region: config.region,
+      secretAccessKey: config.secret
     }, config))
 
     this._bucket = config.bucket
     this._url = config.url
+
+    if (config.cloudfront) {
+      this._signer = new CloudFront.Signer(
+        config.cloudfront.key,
+        config.cloudfront.secret
+      )
+    }
   }
 
   _handleError (err, path) {
@@ -195,15 +202,15 @@ class AwsS3 {
 
     return `${href}${bucket}/${location}`
   }
-
-  getSignedUrl (location, { expiry = 900, ...params } = {}) {
+  
+  getS3SignedUrl (location, expiry, params) {
     return new Promise((resolve, reject) => {
       const clonedParams = Object.assign({}, params, {
         Key: location,
         Bucket: this._bucket,
-        Expires: expiry,
+        Expires: expiry
       })
-
+      
       this.s3.getSignedUrl('getObject', clonedParams, (err, url) => {
         if (err) {
           return reject(this._handleError(err, location))
@@ -216,6 +223,31 @@ class AwsS3 {
         return resolve(url)
       })
     })
+  }
+
+  getCloudFrontSignedUrl (location, expiry) {
+    return new Promise((resolve, reject) => {
+      const params = {
+        url: this.getUrl(location),
+        expires: Math.floor(Date.now() / 1000) + expiry
+      }
+
+      this._signer.getSignedUrl(params, (err, url) => {
+        if (err) {
+          return reject(this._handleError(err, location))
+        }
+
+        return resolve(url)
+      })
+    })
+  }
+
+  getSignedUrl (location, { expiry = 900, ...params } = {}) {
+    if (this._signer) {
+      return this.getCloudFrontSignedUrl(location, expiry)
+    }
+
+    return this.getS3SignedUrl(location, expiry, params)
   }
 
   copy (src, dest, params = {}) {
