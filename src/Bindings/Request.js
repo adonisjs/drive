@@ -36,6 +36,8 @@ function createValidationStream (file) {
         }
 
         if (dimensions) {
+          file.dimensions = dimensions
+          
           if ((width && dimensions.width > width) || (height && dimensions.height > height)) {
             stream.emit('bail', `Image dimensions should be no more than ${width}x${height}`, 'dimension')
           }
