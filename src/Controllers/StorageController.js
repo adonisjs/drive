@@ -2,14 +2,13 @@
 
 const contentDisposition = require('content-disposition')
 const { pipeline } = require('stream')
+const { extname } = require('path')
 
 class StorageController {
   async download ({ $disk, params, request, response }) {
     const path = params.path.join('/')
     const stat = await $disk.stat(path)
     const filename = request.input('filename')
-    const file = path[path.length - 1].split('.')
-    const extension = file[1]
 
     response.header('Last-Modified', stat.modified.toUTCString())
     response.header('Content-Type', stat.mimetype)
@@ -17,7 +16,8 @@ class StorageController {
     response.header('Accept-Ranges', 'bytes')
 
     if (filename) {
-      response.header('Content-Disposition', contentDisposition(`${filename}.${extension}`, { type: 'attachment' }))
+      const extension = extname(path[path.length - 1])
+      response.header('Content-Disposition', contentDisposition(`${filename}${extension}`, { type: 'attachment' }))
     }
 
     if (request.method() === 'HEAD') {
