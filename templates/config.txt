@@ -1,0 +1,64 @@
+/**
+ * Config source: https://git.io/JJOQe
+ *
+ * Feel free to let us know via PR, if you find something broken in this config
+ * file.
+ */
+
+import Env from '@ioc:Adonis/Core/Env'
+import { DriveConfig } from '@ioc:Adonis/Addons/Drive'
+
+/*
+|--------------------------------------------------------------------------
+| Drive configuration
+|--------------------------------------------------------------------------
+|
+| Following is the configuration used by the Drive provider.
+|
+| Do make sure to pre-define the disks type inside `contracts/drive.ts`
+| file for AdonisJs to recognize disks.
+|
+| Make sure to check `contracts/drive.ts` file for defining extra disks
+*/
+const driveConfig: DriveConfig = {
+	/*
+	|--------------------------------------------------------------------------
+	| The default disk
+	|--------------------------------------------------------------------------
+	|
+	| The main disk you want to use to store and read files.
+	|
+	*/
+  default: Env.get('DRIVE_DISK', '{{primary}}') as '{{primary}}',
+
+  disks: {
+{{#local}}
+    local: {
+      driver: 'local',
+      config: {
+        root: Env.get('DRIVE_LOCAL_ROOT', 'files') as string,
+      },
+    },
+{{/local}}
+{{#s3}}
+    s3: {
+      driver: 's3',
+      config: {
+        bucket: Env.getOrFail('DRIVE_S3_BUCKET') as string,
+        key: Env.getOrFail('DRIVE_S3_KEY') as string,
+        secret: Env.getOrFail('DRIVE_S3_SECRET') as string,
+      },
+    },
+{{/s3}}
+{{#gcs}}
+    gcs: {
+      driver: 'gcs',
+      config: {
+        bucket: Env.getOrFail('DRIVE_GCS_BUCKET') as string,
+      },
+    },
+{{/gcs}}
+  },
+}
+
+export default driveConfig

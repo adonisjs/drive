@@ -1,0 +1,39 @@
+/**
+ * Contract source: https://git.io/JJOQt
+ *
+ * Feel free to let us know via PR, if you find something broken in this config
+ * file.
+ */
+
+declare module '@ioc:Adonis/Addons/Drive' {
+{{#local}}
+  import { LocalFileSystemStorageConfig } from '@slynova/flydrive'
+{{/local}}
+{{#s3}}
+  import { AmazonWebServicesS3StorageConfig } from '@slynova/flydrive-s3'
+{{/s3}}
+{{#gcs}}
+  import { GoogleCloudStorageConfig } from '@slynova/flydrive-gcs'
+{{/gcs}}
+
+  interface DriveDisksList {
+{{#local}}
+    local: {
+      driver: 'local'
+      config: LocalFileSystemStorageConfig
+    }
+{{/local}}
+{{#s3}}
+    s3: {
+      driver: 's3'
+      config: AmazonWebServicesS3StorageConfig
+    }
+{{/s3}}
+{{#gcs}}
+    gcs: {
+      driver: 'gcs'
+      config: GoogleCloudStorageConfig
+    }
+{{/gcs}}
+  }
+}
