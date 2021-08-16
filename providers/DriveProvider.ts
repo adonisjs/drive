@@ -21,7 +21,7 @@ export default class DriveProvider {
    */
   protected registerDrive() {
     this.app.container.singleton('Adonis/Core/Drive', () => {
-      const { DriveManager } = require('../src/Drive/DriveManager')
+      const { DriveManager } = require('../src/DriveManager')
       const Router = this.app.container.resolveBinding('Adonis/Core/Route')
       const Config = this.app.container.resolveBinding('Adonis/Core/Config')
 
