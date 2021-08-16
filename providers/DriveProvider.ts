@@ -37,7 +37,7 @@ export default class DriveProvider {
       ['Adonis/Core/Config', 'Adonis/Core/Route', 'Adonis/Core/Drive'],
       (Config, Router, Drive) => {
         const driveConfig: DriveConfig = Config.get('drive', {})
-        const { LocalFileServer } = require('../src/Drive/LocalFileServer')
+        const { LocalFileServer } = require('../src/LocalFileServer')
 
         Object.keys(driveConfig.disks).forEach((diskName: keyof DisksList) => {
           const diskConfig = driveConfig.disks[diskName]

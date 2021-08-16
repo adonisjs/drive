@@ -54,7 +54,9 @@ export class LocalFileServer {
       )
     }
 
-    const routePattern = `${this.config.basePath}/${LocalFileServer.filePathParamName}`
+    const routePattern = `${this.config.basePath.replace(/\/$/, '')}/${
+      LocalFileServer.filePathParamName
+    }`
 
     this.router
       .get(routePattern, async ({ response, request, logger }) => {

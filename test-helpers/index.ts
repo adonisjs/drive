@@ -29,6 +29,26 @@ export async function setupApp(providers?: string[]) {
   `
   )
 
+  await fs.add(
+    'config/drive.ts',
+    `
+    const driveConfig = {
+      disk: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          root: '${join(fs.basePath, 'uploads')}',
+          basePath: '/uploads',
+          serveAssets: true,
+          visibility: 'public'
+        }
+      }
+    }
+
+    export default driveConfig
+  `
+  )
+
   await app.setup()
   await app.registerProviders()
   await app.bootProviders()
