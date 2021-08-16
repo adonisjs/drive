@@ -35,7 +35,7 @@
   "devDependencies": {
     "@adonisjs/application": "^5.1.6",
     "@adonisjs/encryption": "^4.0.5",
-    "@adonisjs/http-server": "^5.5.4",
+    "@adonisjs/http-server": "^5.5.5",
     "@adonisjs/mrm-preset": "^4.1.2",
     "@adonisjs/require-ts": "^2.0.7",
     "@poppinss/dev-utils": "^1.1.5",
