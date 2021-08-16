@@ -76,5 +76,16 @@
   "peerDependencies": {
     "@adonisjs/application": "^5.0.0",
     "@adonisjs/http-server": "^5.0.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adonisjs/drive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adonisjs/drive/issues"
+  },
+  "homepage": "https://github.com/adonisjs/drive#readme"
 }
