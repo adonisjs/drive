@@ -1,85 +1,84 @@
-# Adonis Drive 💾
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of contents
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/adonisjs/adonis-drive.svg)](https://greenkeeper.io/)
+- [AdonisJS Drive](#adonisjs-drive)
+- [
+    
+      Website
+    
+     | 
+    
+      Guides
+    
+     | 
+    
+      Contributing
+    
+     | 
+    
+      Benchmarks
+    
+  ](#website%0A----%0A------%0A----%0A------guides%0A----%0A------%0A----%0A------contributing%0A----%0A------%0A----%0A------benchmarks)
 
-This repo makes it easier to interact with files using multiple inbuilt drivers.
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-It is built on top of [node-flydrive](https://github.com/Slynova-Org/node-flydrive) and API is 100% compatible with it.
+<div align="center">
+  <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1558612869/adonis-readme_zscycu.jpg" width="600px">
+</div>
 
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Appveyor][appveyor-image]][appveyor-url]
-[![Coveralls][coveralls-image]][coveralls-url]
+<br />
 
-<img src="http://res.cloudinary.com/adonisjs/image/upload/q_100/v1497112678/adonis-purple_pzkmzt.svg" width="200px" align="right" hspace="30px" vspace="140px">
+<div align="center">
+  <h3>AdonisJS Drive</h3>
+  <p>
+    An abstraction on top of cloud storage services like <strong>Google cloud</strong>, <strong>Amazon S3</strong>, and <strong>Digital ocean spaces</strong>. Can be extended to add custom drivers.
+  </p>
+</div>
 
-## Setup
+<br />
 
-Make sure to read [instructions.md](instructions.md) on how to set up.
+<div align="center">
 
-## Node/OS Target
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url] [![synk-image]][synk-url]
 
-This repo/branch is supposed to run fine on all major OS platforms and targets `Node.js >=7.0`
+</div>
 
-## Development
+<div align="center">
+  <h3>
+    <a href="https://adonisjs.com">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://docs.adonisjs.com/guides/drive">
+      Guides
+    </a>
+    <span> | </span>
+    <a href="CONTRIBUTING.md">
+      Contributing
+    </a>
+    <span> | </span>
+    <a href="benchmarks.md">
+      Benchmarks
+    </a>
+  </h3>
+</div>
 
-Great! If you are planning to contribute to the framework, make sure to adhere to following conventions, since a consistent code-base is always joy to work with.
+<div align="center">
+  <sub>Built with ❤︎ by <a href="https://twitter.com/AmanVirk1">Harminder Virk</a>
+</div>
 
-Run the following command to see list of available npm scripts.
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/adonisjs/drive/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/drive/actions/workflows/test.yml "Github action"
 
-```
-npm run
-```
+[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
+[typescript-url]:  "typescript"
 
-### Tests & Linting
+[npm-image]: https://img.shields.io/npm/v/@adonisjs/drive.svg?style=for-the-badge&logo=npm
+[npm-url]: https://npmjs.org/package/@adonisjs/drive "npm"
 
-1. Lint your code using standardJs. Run `npm run lint` command to check if there are any linting errors.
-2. Make sure you write tests for all the changes/bug fixes.
-3. Also you can write **regression tests**, which shows that something is failing but doesn't breaks the build. Which is actually a nice way to show that something fails. Regression tests are written using `test.failing()` method.
-4. Make sure all the tests are passing on `travis` and `appveyor`.
+[license-image]: https://img.shields.io/npm/l/@adonisjs/drive?color=blueviolet&style=for-the-badge
+[license-url]: LICENSE.md "license"
 
-### General Practices
-
-Since Es6 is in, you should strive to use latest features. For example:
-
-1. Use `Spread` over `arguments` keyword.
-2. Never use `bind` or `call`. After calling these methods, we cannot guarantee the scope of any methods and in AdonisJs codebase we do not override the methods scope.
-3. Make sure to write proper docblock.
-
-## Issues & PR
-
-It is always helpful if we try to follow certain practices when creating issues or PR's, since it will save everyone's time.
-
-1. Always try creating regression tests when you find a bug (if possible).
-2. Share some context on what you are trying to do, with enough code to reproduce the issue.
-3. For general questions, please create a forum thread.
-4. When creating a PR for a feature, make sure to create a parallel PR for docs too.
-
-
-## Regression Tests
-
-Regression tests are tests, which shows how a piece of code fails under certain circumstance, but the beauty is even after the failure, the test suite will never fail. Actually is a nice way to notify about bugs, but making sure everything is green.
-
-The regression tests are created using
-
-```
-test.failing('2 + 2 is always 4, but add method returns 6', (assert) => {
- assert.true(add(2, 2), 4)
-})
-```
-
-Now since the `add` method has a bug, it will return `6` instead of `4`. But the build will pass.
-
-[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/adonis-drive/master.svg?style=flat-square
-
-[appveyor-url]: https://ci.appveyor.com/project/thetutlage/adonis-drive
-
-[npm-image]: https://img.shields.io/npm/v/@adonisjs/drive.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/@adonisjs/drive
-
-[travis-image]: https://img.shields.io/travis/adonisjs/adonis-drive/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/adonisjs/adonis-drive
-
-[coveralls-image]: https://img.shields.io/coveralls/adonisjs/adonis-drive/develop.svg?style=flat-square
-
-[coveralls-url]: https://coveralls.io/github/adonisjs/adonis-drive
+[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/drive?label=Synk%20Vulnerabilities&style=for-the-badge
+[synk-url]: https://snyk.io/test/github/adonisjs/drive?targetFile=package.json "synk"

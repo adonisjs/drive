@@ -1,2 +1,7 @@
-const cli = require('japa/cli')
-cli.run('test/**/*.spec.js')
+require('@adonisjs/require-ts/build/register')
+
+const { configure } = require('japa')
+
+configure({
+  files: ['test/**/*.spec.ts'],
+})
