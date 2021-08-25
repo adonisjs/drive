@@ -1,8 +1,4 @@
-// require('@adonisjs/require-ts/build/register')
-require('ts-node').register({
-  transpileOnly: true,
-})
-
+require('@adonisjs/require-ts/build/register')
 const { configure } = require('japa')
 
 configure({
