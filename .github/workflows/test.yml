@@ -19,7 +19,7 @@ jobs:
       - name: Install
         run: npm install
       - name: Run tests
-        run: npm run build && node build/japaFile.js
+        run: npm test
   windows:
     runs-on: windows-latest
     strategy:
@@ -36,4 +36,4 @@ jobs:
       - name: Install
         run: npm install
       - name: Run tests
-        run: npm run build && node build/japaFile.js
+        run: npm test
