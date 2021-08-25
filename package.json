@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/drive",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Drive is an abstraction on cloud storage service for AdonisJS applications",
   "main": "build/providers/DriveProvider.js",
   "files": [
