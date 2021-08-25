@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { join, normalize } from 'path'
+import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
 import { Application } from '@adonisjs/application'
 
@@ -37,7 +37,7 @@ export async function setupApp(providers?: string[]) {
       disks: {
         local: {
           driver: 'local',
-          root: '${normalize(join(fs.basePath, 'uploads'))}',
+          root: '${join(fs.basePath, 'uploads').replace(/\\/g, '/')}',
           basePath: '/uploads',
           serveAssets: true,
           visibility: 'public'
