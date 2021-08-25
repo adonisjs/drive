@@ -11,7 +11,7 @@
 
 import { Manager } from '@poppinss/manager'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
-import { ManagerConfigValidator } from '@poppinss/utils'
+import { Exception, ManagerConfigValidator } from '@poppinss/utils'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 import {
@@ -40,6 +40,11 @@ export class DriveManager
   >
   implements DriveManagerContract
 {
+  /**
+   * Find if drive is ready to be used
+   */
+  private isReady: boolean = false
+
   /**
    * The fake callback
    */
@@ -71,9 +76,15 @@ export class DriveManager
    * Validate config
    */
   private validateConfig() {
+    if (!this.config) {
+      return
+    }
+
     const validator = new ManagerConfigValidator(this.config, 'drive', 'config/drive')
     validator.validateDefault('disk')
     validator.validateList('disks', 'disk')
+
+    this.isReady = true
   }
 
   /**
@@ -138,6 +149,14 @@ export class DriveManager
    * Resolve instance for a disk
    */
   public use(disk?: keyof DisksList): any {
+    if (!this.isReady) {
+      throw new Exception(
+        'Missing configuration for drive. Visit https://bit.ly/2WnR5j9 for setup instructions',
+        500,
+        'E_MISSING_DRIVE_CONFIG'
+      )
+    }
+
     disk = disk || this.getDefaultMappingName()
     if (this.fakes.has(disk)) {
       return this.fakes.get(disk)

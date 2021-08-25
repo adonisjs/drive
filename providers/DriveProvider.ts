@@ -25,14 +25,7 @@ export default class DriveProvider {
       const Router = this.app.container.resolveBinding('Adonis/Core/Route')
       const Config = this.app.container.resolveBinding('Adonis/Core/Config')
 
-      const driveConfig: DriveConfig = Config.get('drive', {})
-      if (!driveConfig) {
-        throw new Error(
-          'Missing configuration for drive. Visit https://bit.ly/2WnR5j9 for setup instructions'
-        )
-      }
-
-      return new DriveManager(this.app, Router, driveConfig)
+      return new DriveManager(this.app, Router, Config.get('drive'))
     })
   }
 
@@ -50,7 +43,7 @@ export default class DriveProvider {
          * This is a make shift arrangement. Later, we will have a universal
          * approach to disabling modules
          */
-        const driveConfig: DriveConfig = Config.get('drive', {})
+        const driveConfig: DriveConfig = Config.get('drive')
         if (!driveConfig) {
           return
         }
