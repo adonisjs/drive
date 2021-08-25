@@ -25,7 +25,14 @@ export default class DriveProvider {
       const Router = this.app.container.resolveBinding('Adonis/Core/Route')
       const Config = this.app.container.resolveBinding('Adonis/Core/Config')
 
-      return new DriveManager(this.app, Router, Config.get('drive', {}))
+      const driveConfig: DriveConfig = Config.get('drive', {})
+      if (!driveConfig) {
+        throw new Error(
+          'Missing configuration for drive. Visit https://bit.ly/2WnR5j9 for setup instructions'
+        )
+      }
+
+      return new DriveManager(this.app, Router, driveConfig)
     })
   }
 
@@ -34,9 +41,21 @@ export default class DriveProvider {
    */
   protected defineDriveRoutes() {
     this.app.container.withBindings(
-      ['Adonis/Core/Config', 'Adonis/Core/Route', 'Adonis/Core/Drive'],
-      (Config, Router, Drive) => {
+      ['Adonis/Core/Config', 'Adonis/Core/Route'],
+      (Config, Router) => {
+        /**
+         * Do not attempt to resolve Drive from the container when there is
+         * no configuration in place.
+         *
+         * This is a make shift arrangement. Later, we will have a universal
+         * approach to disabling modules
+         */
         const driveConfig: DriveConfig = Config.get('drive', {})
+        if (!driveConfig) {
+          return
+        }
+
+        const Drive = this.app.container.resolveBinding('Adonis/Core/Drive')
         const { LocalFileServer } = require('../src/LocalFileServer')
 
         Object.keys(driveConfig.disks).forEach((diskName: keyof DisksList) => {
