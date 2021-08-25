@@ -87,5 +87,9 @@
   "bugs": {
     "url": "https://github.com/adonisjs/drive/issues"
   },
-  "homepage": "https://github.com/adonisjs/drive#readme"
+  "homepage": "https://github.com/adonisjs/drive#readme",
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  }
 }
