@@ -39,7 +39,7 @@ export class LocalFileServer {
   ) {}
 
   /**
-   * Registers route for disk using "local" driver and "serveAssets"
+   * Registers route for disk using "local" driver and "serveFiles"
    * true
    */
   public registerRoute() {

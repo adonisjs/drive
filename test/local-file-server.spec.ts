@@ -32,7 +32,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
     }
 
     const driver = new LocalDriver('local', config, router)
@@ -55,7 +55,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -84,7 +84,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -112,7 +112,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -139,7 +139,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -165,7 +165,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -189,7 +189,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -219,7 +219,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -246,7 +246,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -273,7 +273,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -296,7 +296,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -325,7 +325,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -366,7 +366,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -394,7 +394,7 @@ test.group('Local file server', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 

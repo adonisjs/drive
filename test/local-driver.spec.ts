@@ -437,7 +437,7 @@ test.group('Local driver | getUrl', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -463,7 +463,7 @@ test.group('Local driver | getVisibility', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -485,7 +485,7 @@ test.group('Local driver | setVisibility', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'public' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 
@@ -508,7 +508,7 @@ test.group('Local driver | getSignedUrl', (group) => {
       driver: 'local' as const,
       root: TEST_ROOT,
       visibility: 'private' as const,
-      serveAssets: true,
+      serveFiles: true,
       basePath: '/uploads',
     }
 

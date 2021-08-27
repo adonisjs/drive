@@ -163,9 +163,9 @@ declare module '@ioc:Adonis/Core/Drive' {
     root: string
 
     /**
-     * Base path is always required when "serveAssets = true"
+     * Base path is always required when "serveFiles = true"
      */
-    serveAssets?: boolean
+    serveFiles?: boolean
     basePath?: string
   }
 

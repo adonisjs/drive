@@ -131,7 +131,7 @@ export class LocalDriver implements LocalDriverContract {
     location: string,
     options?: ContentHeaders & { expiresIn?: string | number }
   ): Promise<string> {
-    if (!this.config.serveAssets) {
+    if (!this.config.serveFiles) {
       throw CannotGenerateUrlException.invoke(location, this.diskName)
     }
 
@@ -150,7 +150,7 @@ export class LocalDriver implements LocalDriverContract {
    * Returns a URL for a given location path
    */
   public async getUrl(location: string): Promise<string> {
-    if (!this.config.serveAssets) {
+    if (!this.config.serveFiles) {
       throw CannotGenerateUrlException.invoke(location, this.diskName)
     }
 

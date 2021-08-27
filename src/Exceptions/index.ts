@@ -170,7 +170,7 @@ export class CannotGenerateUrlException extends Exception {
 
   public static invoke(location: string, diskName: string) {
     const error = new this(
-      `Cannot generate URL for location "${location}". Make sure to set "serveAssets = true" for "${diskName}" disk`,
+      `Cannot generate URL for location "${location}". Make sure to set "serveFiles = true" for "${diskName}" disk`,
       500,
       'E_CANNOT_GENERATE_URL'
     )

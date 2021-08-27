@@ -39,7 +39,7 @@ export async function setupApp(providers?: string[]) {
           driver: 'local',
           root: '${join(fs.basePath, 'uploads').replace(/\\/g, '/')}',
           basePath: '/uploads',
-          serveAssets: true,
+          serveFiles: true,
           visibility: 'public'
         }
       }

@@ -53,7 +53,7 @@ export default class DriveProvider {
 
         Object.keys(driveConfig.disks).forEach((diskName: keyof DisksList) => {
           const diskConfig = driveConfig.disks[diskName]
-          if (diskConfig.driver === 'local' && diskConfig.serveAssets) {
+          if (diskConfig.driver === 'local' && diskConfig.serveFiles) {
             new LocalFileServer(diskName, diskConfig, Drive.use(diskName), Router).registerRoute()
           }
         })
