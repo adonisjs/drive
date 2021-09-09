@@ -20,7 +20,6 @@ import {
   DriveConfig,
   DriverContract,
   DriveFileStats,
-  ContentHeaders,
   DriveFakeContract,
   LocalDriverConfig,
   DriveManagerContract,
@@ -177,98 +176,95 @@ export class DriveManager
    * value allows you to self choose the encoding when
    * converting the buffer to a string.
    */
-  public async get(location: string): Promise<Buffer> {
-    return this.use().get(location)
+  public async get(location: string, ...args: any[]): Promise<Buffer> {
+    return this.use().get(location, ...args)
   }
 
   /**
    * Returns the file contents as a stream
    */
-  public async getStream(location: string): Promise<NodeJS.ReadableStream> {
-    return this.use().getStream(location)
+  public async getStream(location: string, ...args: any[]): Promise<NodeJS.ReadableStream> {
+    return this.use().getStream(location, ...args)
   }
 
   /**
    * A boolean to find if the location path exists or not
    */
-  public exists(location: string): Promise<boolean> {
-    return this.use().exists(location)
+  public exists(location: string, ...args: any[]): Promise<boolean> {
+    return this.use().exists(location, ...args)
   }
 
   /**
    * Returns the location path visibility
    */
-  public async getVisibility(location: string): Promise<Visibility> {
-    return this.use().getVisibility(location)
+  public async getVisibility(location: string, ...args: any[]): Promise<Visibility> {
+    return this.use().getVisibility(location, ...args)
   }
 
   /**
    * Returns the location path stats
    */
-  public async getStats(location: string): Promise<DriveFileStats> {
-    return this.use().getStats(location)
+  public async getStats(location: string, ...args: any[]): Promise<DriveFileStats> {
+    return this.use().getStats(location, ...args)
   }
 
   /**
    * Returns a signed URL for a given location path
    */
-  public getSignedUrl(
-    location: string,
-    options?: ContentHeaders & { expiresIn?: number | string }
-  ): Promise<string> {
-    return this.use().getSignedUrl(location, options)
+  public getSignedUrl(location: string, ...args: any[]): Promise<string> {
+    return this.use().getSignedUrl(location, ...args)
   }
 
   /**
    * Returns a URL for a given location path
    */
-  public getUrl(location: string): Promise<string> {
-    return this.use().getUrl(location)
+  public getUrl(location: string, ...args: any[]): Promise<string> {
+    return this.use().getUrl(location, ...args)
   }
 
   /**
    * Write string|buffer contents to a destination. The missing
    * intermediate directories will be created (if required).
    */
-  public put(location: string, contents: Buffer | string): Promise<void> {
-    return this.use().put(location, contents)
+  public put(location: string, ...args: any[]): Promise<void> {
+    return this.use().put(location, ...args)
   }
 
   /**
    * Write a stream to a destination. The missing intermediate
    * directories will be created (if required).
    */
-  public putStream(location: string, contents: NodeJS.ReadableStream): Promise<void> {
-    return this.use().putStream(location, contents)
+  public putStream(location: string, ...args: any[]): Promise<void> {
+    return this.use().putStream(location, ...args)
   }
 
   /**
    * Not supported
    */
-  public setVisibility(location: string, visibility: Visibility): Promise<void> {
-    return this.use().setVisibility(location, visibility)
+  public setVisibility(location: string, ...args: any[]): Promise<void> {
+    return this.use().setVisibility(location, ...args)
   }
 
   /**
    * Remove a given location path
    */
-  public delete(location: string): Promise<void> {
-    return this.use().delete(location)
+  public delete(location: string, ...args: any[]): Promise<void> {
+    return this.use().delete(location, ...args)
   }
 
   /**
    * Copy a given location path from the source to the desination.
    * The missing intermediate directories will be created (if required)
    */
-  public copy(source: string, destination: string): Promise<void> {
-    return this.use().copy(source, destination)
+  public copy(source: string, ...args: any[]): Promise<void> {
+    return this.use().copy(source, ...args)
   }
 
   /**
    * Move a given location path from the source to the desination.
    * The missing intermediate directories will be created (if required)
    */
-  public move(source: string, destination: string): Promise<void> {
-    return this.use().move(source, destination)
+  public move(source: string, ...args: any[]): Promise<void> {
+    return this.use().move(source, ...args)
   }
 }
