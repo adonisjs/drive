@@ -27,6 +27,7 @@ test.group('Local file server', (group) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
 
     const config = {
       driver: 'local' as const,
@@ -37,7 +38,7 @@ test.group('Local file server', (group) => {
 
     const driver = new LocalDriver('local', config, router)
     try {
-      new LocalFileServer('local', config, driver, router).registerRoute()
+      new LocalFileServer('local', config, driver, router, logger).registerRoute()
     } catch (error) {
       assert.equal(
         error.message,
@@ -49,6 +50,7 @@ test.group('Local file server', (group) => {
   test('serve file from a url', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -60,7 +62,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -78,6 +80,7 @@ test.group('Local file server', (group) => {
   test('set etag when serving files', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -89,7 +92,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -106,6 +109,7 @@ test.group('Local file server', (group) => {
   test('invalidate cache when private file signature has expired', async () => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -117,7 +121,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -133,6 +137,7 @@ test.group('Local file server', (group) => {
   test('respond with 304 for HEAD requests when cache is fresh', async () => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -144,7 +149,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -159,6 +164,7 @@ test.group('Local file server', (group) => {
   test('respond with 200 for HEAD requests when cache is stale', async () => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -170,7 +176,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -183,6 +189,7 @@ test.group('Local file server', (group) => {
   test('do not serve file when cache is fresh', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -194,7 +201,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -213,6 +220,7 @@ test.group('Local file server', (group) => {
   test('deny access when attempting to access a private file without signedUrl', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -224,7 +232,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -240,6 +248,7 @@ test.group('Local file server', (group) => {
   test('return error when trying to access a directory', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -251,7 +260,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -267,6 +276,7 @@ test.group('Local file server', (group) => {
   test('return error when trying to access a non existing file', async () => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -278,7 +288,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -290,6 +300,7 @@ test.group('Local file server', (group) => {
   test('serve private files using signed url', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -301,7 +312,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -319,6 +330,7 @@ test.group('Local file server', (group) => {
   test('use signed url content headers when defined', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -330,7 +342,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -360,6 +372,7 @@ test.group('Local file server', (group) => {
   test('do not use content headers on a public file with invalid signature', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -371,7 +384,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
@@ -388,6 +401,7 @@ test.group('Local file server', (group) => {
   test('serve public files from the signed url', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
     const adonisServer = app.container.resolveBinding('Adonis/Core/Server')
 
     const config = {
@@ -399,7 +413,7 @@ test.group('Local file server', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     adonisServer.optimize()
 
     const server = createServer(adonisServer.handle.bind(adonisServer))

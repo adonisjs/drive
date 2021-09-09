@@ -432,6 +432,7 @@ test.group('Local driver | getUrl', (group) => {
   test('get url to a given file', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
 
     const config = {
       driver: 'local' as const,
@@ -442,7 +443,7 @@ test.group('Local driver | getUrl', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     router.commit()
 
     const url = await driver.getUrl('foo.txt')
@@ -503,6 +504,7 @@ test.group('Local driver | getSignedUrl', (group) => {
   test('get signed url to a given file', async (assert) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
 
     const config = {
       driver: 'local' as const,
@@ -513,7 +515,7 @@ test.group('Local driver | getSignedUrl', (group) => {
     }
 
     const driver = new LocalDriver('local', config, router)
-    new LocalFileServer('local', config, driver, router).registerRoute()
+    new LocalFileServer('local', config, driver, router, logger).registerRoute()
     router.commit()
 
     const url = await driver.getSignedUrl('foo.txt')

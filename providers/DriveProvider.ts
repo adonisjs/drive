@@ -24,8 +24,9 @@ export default class DriveProvider {
       const { DriveManager } = require('../src/DriveManager')
       const Router = this.app.container.resolveBinding('Adonis/Core/Route')
       const Config = this.app.container.resolveBinding('Adonis/Core/Config')
+      const Logger = this.app.container.resolveBinding('Adonis/Core/Logger')
 
-      return new DriveManager(this.app, Router, Config.get('drive'))
+      return new DriveManager(this.app, Router, Logger, Config.get('drive'))
     })
   }
 
@@ -34,8 +35,8 @@ export default class DriveProvider {
    */
   protected defineDriveRoutes() {
     this.app.container.withBindings(
-      ['Adonis/Core/Config', 'Adonis/Core/Route'],
-      (Config, Router) => {
+      ['Adonis/Core/Config', 'Adonis/Core/Route', 'Adonis/Core/Logger'],
+      (Config, Router, Logger) => {
         /**
          * Do not attempt to resolve Drive from the container when there is
          * no configuration in place.
@@ -54,7 +55,13 @@ export default class DriveProvider {
         Object.keys(driveConfig.disks).forEach((diskName: keyof DisksList) => {
           const diskConfig = driveConfig.disks[diskName]
           if (diskConfig.driver === 'local' && diskConfig.serveFiles) {
-            new LocalFileServer(diskName, diskConfig, Drive.use(diskName), Router).registerRoute()
+            new LocalFileServer(
+              diskName,
+              diskConfig,
+              Drive.use(diskName),
+              Router,
+              Logger
+            ).registerRoute()
           }
         })
       }

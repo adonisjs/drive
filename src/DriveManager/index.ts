@@ -11,6 +11,7 @@
 
 import { Manager } from '@poppinss/manager'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { Exception, ManagerConfigValidator } from '@poppinss/utils'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
@@ -65,6 +66,7 @@ export class DriveManager
   constructor(
     public application: ApplicationContract,
     public router: RouterContract,
+    private logger: LoggerContract,
     private config: DriveConfig
   ) {
     super(application)
@@ -122,6 +124,7 @@ export class DriveManager
     disk = disk || this.getDefaultMappingName()
 
     if (!this.fakes.has(disk)) {
+      this.logger.trace({ disk: disk }, 'drive faking disk')
       this.fakes.set(disk, this.fakeCallback(this, disk, this.getMappingConfig(disk)))
     }
   }
@@ -133,6 +136,7 @@ export class DriveManager
     disk = disk || this.getDefaultMappingName()
 
     if (this.fakes.has(disk)) {
+      this.logger.trace({ disk: disk }, 'drive restoring disk fake')
       this.fakes.delete(disk)
     }
   }

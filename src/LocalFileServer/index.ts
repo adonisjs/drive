@@ -11,6 +11,7 @@
 
 import { extname } from 'path'
 import { Exception } from '@poppinss/utils'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 import { LocalDriverConfig, LocalDriverContract } from '@ioc:Adonis/Core/Drive'
 
@@ -35,7 +36,8 @@ export class LocalFileServer {
     private diskName: string,
     private config: LocalDriverConfig,
     private driver: LocalDriverContract,
-    private router: RouterContract
+    private router: RouterContract,
+    private logger: LoggerContract
   ) {}
 
   /**
@@ -54,9 +56,12 @@ export class LocalFileServer {
       )
     }
 
+    const routeName = LocalFileServer.makeRouteName(this.diskName)
     const routePattern = `${this.config.basePath.replace(/\/$/, '')}/${
       LocalFileServer.filePathParamName
     }`
+
+    this.logger.trace({ route: routePattern, name: routeName }, 'registering drive route')
 
     this.router
       .get(routePattern, async ({ response, request, logger }) => {
@@ -184,6 +189,6 @@ export class LocalFileServer {
           }
         }
       })
-      .as(LocalFileServer.makeRouteName(this.diskName))
+      .as(routeName)
   }
 }
