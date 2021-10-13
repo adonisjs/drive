@@ -68,7 +68,7 @@
   "dependencies": {
     "@poppinss/manager": "^4.0.4",
     "@poppinss/utils": "^3.2.0",
-    "@types/fs-extra": "^9.0.12",
+    "@types/fs-extra": "^9.0.13",
     "etag": "^1.8.1",
     "fs-extra": "^10.0.0",
     "memfs": "^3.3.0"
