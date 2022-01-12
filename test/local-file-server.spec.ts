@@ -67,14 +67,34 @@ test.group('Local file server', (group) => {
 
     const server = createServer(adonisServer.handle.bind(adonisServer))
     await driver.put('foo.txt', 'hello world')
+    await driver.put('你好.txt', '你好')
+    await driver.put('Здравствыйте.txt', 'Здравствыйте')
 
     const { text, headers } = await supertest(server)
       .get(await driver.getUrl('foo.txt'))
+      .expect(200)
+    const { text: chineseText, headers: chineseHeaders } = await supertest(server)
+      .get(await driver.getUrl(encodeURIComponent('你好.txt')))
+      .expect(200)
+    const { text: cyrillicText, headers: cyrillicHeaders } = await supertest(server)
+      .get(await driver.getUrl(encodeURIComponent('Здравствыйте.txt')))
       .expect(200)
 
     assert.equal(text, 'hello world')
     assert.equal(headers['content-length'], 'hello world'.length)
     assert.equal(headers['content-type'], 'text/plain; charset=utf-8')
+
+    assert.equal(chineseText, '你好')
+    // https://en.wikipedia.org/wiki/UTF-8#Description
+    // Single Chinese words is equal to 3 bytes
+    assert.equal(chineseHeaders['content-length'], '你好'.length * 3)
+    assert.equal(chineseHeaders['content-type'], 'text/plain; charset=utf-8')
+
+    assert.equal(cyrillicText, 'Здравствыйте')
+    // https://en.wikipedia.org/wiki/UTF-8#Description
+    // Single Cyril words is equal to 2 bytes
+    assert.equal(cyrillicHeaders['content-length'], 'Здравствыйте'.length * 2)
+    assert.equal(cyrillicHeaders['content-type'], 'text/plain; charset=utf-8')
   })
 
   test('set etag when serving files', async (assert) => {
