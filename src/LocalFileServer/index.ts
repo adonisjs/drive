@@ -65,7 +65,13 @@ export class LocalFileServer {
 
     this.router
       .get(routePattern, async ({ response, request, logger }) => {
-        const location = request.param(LocalFileServer.filePathParamName).join('/')
+        let location = request.param(LocalFileServer.filePathParamName).join('/')
+        try {
+          location = decodeURIComponent(location)
+        } catch (error) {
+          // keep location should be raised as it is
+        }
+
         const fileVisibility = await this.driver.getVisibility(location)
         const usingSignature = !!request.input('signature')
 
