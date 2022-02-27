@@ -7,22 +7,22 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { join } from 'path'
 import { DriveManager } from '../src/DriveManager'
 import { fs, setupApp } from '../test-helpers'
 
 test.group('Drive Provider', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('register drive provider', async (assert) => {
+  test('register drive provider', async ({ assert }) => {
     const app = await setupApp([join(__dirname, '../providers/DriveProvider')])
     assert.instanceOf(app.container.use('Adonis/Core/Drive'), DriveManager)
   })
 
-  test('register route for serving files from local disk', async (assert) => {
+  test('register route for serving files from local disk', async ({ assert }) => {
     const app = await setupApp([join(__dirname, '../providers/DriveProvider')])
     const router = app.container.use('Adonis/Core/Route')
     router.commit()
