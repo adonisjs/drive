@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import etag from 'etag'
 import { join } from 'path'
 import supertest from 'supertest'
@@ -19,11 +19,11 @@ import { LocalFileServer } from '../src/LocalFileServer'
 const TEST_ROOT = join(fs.basePath, 'storage')
 
 test.group('Local file server', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('raise exception when basePath is not configured', async (assert) => {
+  test('raise exception when basePath is not configured', async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
@@ -47,7 +47,7 @@ test.group('Local file server', (group) => {
     }
   })
 
-  test('serve file from a url', async (assert) => {
+  test('serve file from a url', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -97,7 +97,7 @@ test.group('Local file server', (group) => {
     assert.equal(cyrillicHeaders['content-type'], 'text/plain; charset=utf-8')
   })
 
-  test('set etag when serving files', async (assert) => {
+  test('set etag when serving files', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -206,7 +206,7 @@ test.group('Local file server', (group) => {
     await supertest(server).head(url).expect(200)
   }).timeout(6000)
 
-  test('do not serve file when cache is fresh', async (assert) => {
+  test('do not serve file when cache is fresh', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -237,7 +237,9 @@ test.group('Local file server', (group) => {
     assert.equal(headers['etag'], fileEtag)
   })
 
-  test('deny access when attempting to access a private file without signedUrl', async (assert) => {
+  test('deny access when attempting to access a private file without signedUrl', async ({
+    assert,
+  }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -265,7 +267,7 @@ test.group('Local file server', (group) => {
     assert.equal(text, 'Access denied')
   })
 
-  test('return error when trying to access a directory', async (assert) => {
+  test('return error when trying to access a directory', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -317,7 +319,7 @@ test.group('Local file server', (group) => {
       .expect(404)
   })
 
-  test('serve private files using signed url', async (assert) => {
+  test('serve private files using signed url', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -347,7 +349,7 @@ test.group('Local file server', (group) => {
     assert.equal(headers['content-type'], 'text/plain; charset=utf-8')
   })
 
-  test('use signed url content headers when defined', async (assert) => {
+  test('use signed url content headers when defined', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -389,7 +391,7 @@ test.group('Local file server', (group) => {
     assert.equal(headers['cache-control'], 'private')
   })
 
-  test('do not use content headers on a public file with invalid signature', async (assert) => {
+  test('do not use content headers on a public file with invalid signature', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -418,7 +420,7 @@ test.group('Local file server', (group) => {
     assert.equal(headers['content-type'], 'text/plain; charset=utf-8')
   })
 
-  test('serve public files from the signed url', async (assert) => {
+  test('serve public files from the signed url', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')

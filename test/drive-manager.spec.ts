@@ -7,17 +7,17 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { join } from 'path'
 import { setupApp, fs } from '../test-helpers'
 import { DriveManager } from '../src/DriveManager'
 
 test.group('Drive Manager', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('make instance of the local driver', async (assert) => {
+  test('make instance of the local driver', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {
@@ -38,7 +38,7 @@ test.group('Drive Manager', (group) => {
     assert.isFalse(await drive.use('local').exists('foo.txt'))
   })
 
-  test('run operations using the default disk', async (assert) => {
+  test('run operations using the default disk', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {
@@ -79,7 +79,7 @@ test.group('Drive Manager', (group) => {
     assert.equal(await drive.getVisibility('foo.txt'), 'public')
   })
 
-  test('extend drive to add a custom driver', async (assert) => {
+  test('extend drive to add a custom driver', async ({ assert }) => {
     assert.plan(2)
     const app = await setupApp()
 
@@ -107,7 +107,7 @@ test.group('Drive Manager', (group) => {
     await drive.put('foo.txt', 'hello world')
   })
 
-  test('fake the default disk', async (assert) => {
+  test('fake the default disk', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {
@@ -153,7 +153,7 @@ test.group('Drive Manager', (group) => {
     assert.equal(await drive.getVisibility('foo.txt'), 'public')
   })
 
-  test('faking a disk should not impact the other disk', async (assert) => {
+  test('faking a disk should not impact the other disk', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {
@@ -187,7 +187,7 @@ test.group('Drive Manager', (group) => {
     assert.equal(drive.use('assets' as any).name, 'local')
   })
 
-  test('restore a fake', async (assert) => {
+  test('restore a fake', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {
@@ -221,7 +221,7 @@ test.group('Drive Manager', (group) => {
     assert.isFalse(await drive.exists('foo.txt'))
   })
 
-  test('restore all fakes', async (assert) => {
+  test('restore all fakes', async ({ assert }) => {
     const app = await setupApp()
 
     const config = {

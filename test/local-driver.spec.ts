@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { join } from 'path'
 import { Readable } from 'stream'
 
@@ -18,11 +18,11 @@ import { setupApp, fs } from '../test-helpers'
 const TEST_ROOT = join(fs.basePath, 'storage')
 
 test.group('Local driver | put', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('write file to the destination', async (assert) => {
+  test('write file to the destination', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -34,7 +34,7 @@ test.group('Local driver | put', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('create intermediate directories when missing', async (assert) => {
+  test('create intermediate directories when missing', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -46,7 +46,7 @@ test.group('Local driver | put', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('overwrite destination when file already exists', async (assert) => {
+  test('overwrite destination when file already exists', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -61,11 +61,11 @@ test.group('Local driver | put', (group) => {
 })
 
 test.group('Local driver | putStream', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('write stream to a file', async (assert) => {
+  test('write stream to a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -86,7 +86,7 @@ test.group('Local driver | putStream', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('create intermediate directories when writing a stream to a file', async (assert) => {
+  test('create intermediate directories when writing a stream to a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -107,7 +107,7 @@ test.group('Local driver | putStream', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('overwrite existing file when stream to a file', async (assert) => {
+  test('overwrite existing file when stream to a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -131,11 +131,11 @@ test.group('Local driver | putStream', (group) => {
 })
 
 test.group('Local driver | exists', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('return true when a file exists', async (assert) => {
+  test('return true when a file exists', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -145,7 +145,7 @@ test.group('Local driver | exists', (group) => {
     assert.isTrue(await driver.exists('bar/baz/foo.txt'))
   })
 
-  test("return false when a file doesn't exists", async (assert) => {
+  test("return false when a file doesn't exists", async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -154,7 +154,7 @@ test.group('Local driver | exists', (group) => {
     assert.isFalse(await driver.exists('foo.txt'))
   })
 
-  test("return false when a file parent directory doesn't exists", async (assert) => {
+  test("return false when a file parent directory doesn't exists", async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -165,11 +165,11 @@ test.group('Local driver | exists', (group) => {
 })
 
 test.group('Local driver | delete', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('remove file', async (assert) => {
+  test('remove file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -181,7 +181,7 @@ test.group('Local driver | delete', (group) => {
     assert.isFalse(await driver.exists(join(TEST_ROOT, 'bar/baz/foo.txt')))
   })
 
-  test('do not error when trying to remove a non-existing file', async (assert) => {
+  test('do not error when trying to remove a non-existing file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -192,7 +192,7 @@ test.group('Local driver | delete', (group) => {
     assert.isFalse(await driver.exists(join(TEST_ROOT, 'foo.txt')))
   })
 
-  test("do not error when file parent directory doesn't exists", async (assert) => {
+  test("do not error when file parent directory doesn't exists", async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -205,11 +205,11 @@ test.group('Local driver | delete', (group) => {
 })
 
 test.group('Local driver | copy', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('copy file from within the disk root', async (assert) => {
+  test('copy file from within the disk root', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -222,7 +222,7 @@ test.group('Local driver | copy', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('create intermediate directories when copying a file', async (assert) => {
+  test('create intermediate directories when copying a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -235,7 +235,7 @@ test.group('Local driver | copy', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test("return error when source doesn't exists", async (assert) => {
+  test("return error when source doesn't exists", async ({ assert }) => {
     assert.plan(1)
 
     const app = await setupApp()
@@ -253,7 +253,7 @@ test.group('Local driver | copy', (group) => {
     }
   })
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -269,11 +269,11 @@ test.group('Local driver | copy', (group) => {
 })
 
 test.group('Local driver | move', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('move file from within the disk root', async (assert) => {
+  test('move file from within the disk root', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -287,7 +287,7 @@ test.group('Local driver | move', (group) => {
     assert.isFalse(await driver.exists('foo.txt'))
   })
 
-  test('create intermediate directories when moving a file', async (assert) => {
+  test('create intermediate directories when moving a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -301,7 +301,7 @@ test.group('Local driver | move', (group) => {
     assert.isFalse(await driver.exists('foo.txt'))
   })
 
-  test("return error when source doesn't exists", async (assert) => {
+  test("return error when source doesn't exists", async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
@@ -319,7 +319,7 @@ test.group('Local driver | move', (group) => {
     }
   })
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
@@ -338,11 +338,11 @@ test.group('Local driver | move', (group) => {
 })
 
 test.group('Local driver | get', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get file contents', async (assert) => {
+  test('get file contents', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -354,7 +354,7 @@ test.group('Local driver | get', (group) => {
     assert.equal(contents.toString(), 'hello world')
   })
 
-  test('get file contents as a stream', async (assert, done) => {
+  test('get file contents as a stream', async ({ assert }, done) => {
     assert.plan(1)
 
     const app = await setupApp()
@@ -369,9 +369,9 @@ test.group('Local driver | get', (group) => {
       assert.equal(chunk, 'hello world')
       done()
     })
-  })
+  }).waitForDone()
 
-  test("return error when file doesn't exists", async (assert) => {
+  test("return error when file doesn't exists", async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
@@ -388,11 +388,11 @@ test.group('Local driver | get', (group) => {
 })
 
 test.group('Local driver | getStats', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get file stats', async (assert) => {
+  test('get file stats', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
@@ -405,7 +405,7 @@ test.group('Local driver | getStats', (group) => {
     assert.instanceOf(stats.modified, Date)
   })
 
-  test('return error when file is missing', async (assert) => {
+  test('return error when file is missing', async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
@@ -425,11 +425,11 @@ test.group('Local driver | getStats', (group) => {
 })
 
 test.group('Local driver | getUrl', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get url to a given file', async (assert) => {
+  test('get url to a given file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
@@ -452,11 +452,11 @@ test.group('Local driver | getUrl', (group) => {
 })
 
 test.group('Local driver | getVisibility', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('return disk visibility for a file', async (assert) => {
+  test('return disk visibility for a file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
 
@@ -474,11 +474,11 @@ test.group('Local driver | getVisibility', (group) => {
 })
 
 test.group('Local driver | setVisibility', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('setVisibility should result in noop', async (assert) => {
+  test('setVisibility should result in noop', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
 
@@ -497,11 +497,11 @@ test.group('Local driver | setVisibility', (group) => {
 })
 
 test.group('Local driver | getSignedUrl', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get signed url to a given file', async (assert) => {
+  test('get signed url to a given file', async ({ assert }) => {
     const app = await setupApp()
     const router = app.container.resolveBinding('Adonis/Core/Route')
     const logger = app.container.resolveBinding('Adonis/Core/Logger')
