@@ -8,7 +8,8 @@
  */
 
 export * from './src/Exceptions'
-export { DriveFake } from './src/Fake'
+export { FakeDrive } from './src/Fake'
 export { DriveManager } from './src/DriveManager'
 export { LocalDriver } from './src/Drivers/Local'
+export { FakeDriver } from './src/Drivers/Fake'
 export { LocalFileServer } from './src/LocalFileServer'

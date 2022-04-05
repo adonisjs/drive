@@ -37,7 +37,7 @@ import {
 /**
  * Memory driver is mainly used for testing
  */
-export class DriveFake implements FakeDriverContract {
+export class FakeDriver implements FakeDriverContract {
   /**
    * Reference to the underlying adapter. Which is memfs
    */
