@@ -21,11 +21,11 @@ import {
   DriveConfig,
   DriverContract,
   DriveFileStats,
-  DriveFakeContract,
   LocalDriverConfig,
   DriveManagerContract,
   FakeImplementationCallback,
 } from '@ioc:Adonis/Core/Drive'
+import { FakeDrive } from '../Fake'
 
 /**
  * Drive manager exposes the API to resolve disks and extend by
@@ -49,9 +49,14 @@ export class DriveManager
    * The fake callback
    */
   private fakeCallback: FakeImplementationCallback = (_, disk, config) => {
-    const { DriveFake } = require('../Fake')
+    const { DriveFake } = require('../Drivers/Fake')
     return new DriveFake(disk, config, this.router)
   }
+
+  /**
+   * Reference to the fake drive
+   */
+  private fakeDrive = new FakeDrive()
 
   /**
    * Cache all disks instances
@@ -61,7 +66,7 @@ export class DriveManager
   /**
    * Reference to registered fakes
    */
-  public fakes: Map<keyof DisksList, DriveFakeContract> = new Map()
+  public fakes = this.fakeDrive.fakes
 
   constructor(
     public application: ApplicationContract,
@@ -123,10 +128,12 @@ export class DriveManager
   public fake(disk?: keyof DisksList) {
     disk = disk || this.getDefaultMappingName()
 
-    if (!this.fakes.has(disk)) {
+    if (!this.fakeDrive.isFaked(disk)) {
       this.logger.trace({ disk: disk }, 'drive faking disk')
-      this.fakes.set(disk, this.fakeCallback(this, disk, this.getMappingConfig(disk)))
+      this.fakeDrive.fakes.set(disk, this.fakeCallback(this, disk, this.getMappingConfig(disk)))
     }
+
+    return this.fakeDrive
   }
 
   /**
@@ -135,9 +142,9 @@ export class DriveManager
   public restore(disk?: keyof DisksList) {
     disk = disk || this.getDefaultMappingName()
 
-    if (this.fakes.has(disk)) {
+    if (this.fakeDrive.isFaked(disk)) {
       this.logger.trace({ disk: disk }, 'drive restoring disk fake')
-      this.fakes.delete(disk)
+      this.fakeDrive.restore(disk)
     }
   }
 
@@ -145,7 +152,7 @@ export class DriveManager
    * Restore all fakes1
    */
   public restoreAll() {
-    this.fakes = new Map()
+    this.fakeDrive.fakes = new Map()
   }
 
   /**
@@ -161,8 +168,8 @@ export class DriveManager
     }
 
     disk = disk || this.getDefaultMappingName()
-    if (this.fakes.has(disk)) {
-      return this.fakes.get(disk)
+    if (this.fakeDrive.isFaked(disk)) {
+      return this.fakeDrive.use(disk)
     }
 
     return super.use(disk)

@@ -137,7 +137,7 @@ declare module '@ioc:Adonis/Core/Drive' {
    * Shape of the fake implementation for the driver. Any custom implementation
    * must adhere to it.
    */
-  export interface DriveFakeContract extends DriverContract {
+  export interface FakeDriverContract extends DriverContract {
     /**
      * The name is static
      */
@@ -197,13 +197,44 @@ declare module '@ioc:Adonis/Core/Drive' {
   }
 
   /**
+   * Fake drive
+   */
+  export interface FakeDriveContract {
+    /**
+     * Access to the fake instances created so far
+     */
+    fakes: Map<keyof DisksList, FakeDriverContract>
+
+    /**
+     * Find if a fake file exists
+     */
+    exists(path: string): Promise<boolean>
+
+    /**
+     * Find if the disk is faked
+     */
+    isFaked(disk: keyof DisksList): boolean
+
+    /**
+     * Returns the fake implementation for a given
+     * disk
+     */
+    use(disk: keyof DisksList): FakeDriverContract
+
+    /**
+     * Restore a fake
+     */
+    restore(disk: keyof DisksList): void
+  }
+
+  /**
    * Shape of the fake implementation callback
    */
   export type FakeImplementationCallback = (
     manager: DriveManagerContract,
     mappingName: keyof DisksList,
     config: any
-  ) => DriveFakeContract
+  ) => FakeDriverContract
 
   /**
    * Drive manager to manage disk instances
@@ -217,14 +248,15 @@ declare module '@ioc:Adonis/Core/Drive' {
       >,
       Omit<DriverContract, 'name'> {
     /**
-     * Access to the fake instances created so far
+     * Access to the fake instances created so far.
+     * @deprecated
      */
-    fakes: Map<keyof DisksList, DriveFakeContract>
+    fakes: Map<keyof DisksList, FakeDriverContract>
 
     /**
      * Fake the default or a named disk
      */
-    fake(disk?: keyof DisksList): void
+    fake(disk?: keyof DisksList): FakeDriveContract
 
     /**
      * Restore fake for the default or a named disk
