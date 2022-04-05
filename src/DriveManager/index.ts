@@ -49,8 +49,8 @@ export class DriveManager
    * The fake callback
    */
   private fakeCallback: FakeImplementationCallback = (_, disk, config) => {
-    const { DriveFake } = require('../Drivers/Fake')
-    return new DriveFake(disk, config, this.router)
+    const { FakeDriver } = require('../Drivers/Fake')
+    return new FakeDriver(disk, config, this.router)
   }
 
   /**
