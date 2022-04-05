@@ -31,6 +31,6 @@ test.group('Drive Provider', (group) => {
     assert.lengthOf(routes.root, 1)
     assert.equal(routes.root[0].pattern, '/uploads/*')
     assert.equal(routes.root[0].name, 'drive.local.serve')
-    assert.deepEqual(routes.root[0].methods, ['HEAD', 'GET'])
+    assert.deepEqual(routes.root[0].methods, ['GET', 'HEAD'])
   })
 })

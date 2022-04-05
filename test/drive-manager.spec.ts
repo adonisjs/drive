@@ -254,4 +254,54 @@ test.group('Drive Manager', (group) => {
     assert.equal(drive.use().name, 'local')
     assert.isFalse(await drive.exists('foo.txt'))
   })
+
+  test('overwrite existing file when using fakes', async ({ assert }) => {
+    const app = await setupApp()
+
+    const config = {
+      disk: 'local' as const,
+      disks: {
+        local: {
+          driver: 'local' as const,
+          root: join(fs.basePath, 'storage'),
+          basePath: '/uploads',
+          visibility: 'public' as const,
+        },
+      },
+    }
+
+    const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
+    const drive = new DriveManager(app, router, logger, config)
+    drive.fake()
+    assert.equal(drive.use().name, 'fake')
+
+    await drive.put('foo.txt', 'hello world')
+    assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'foo.txt')))
+
+    assert.equal((await drive.get('foo.txt')).toString(), 'hello world')
+    assert.isTrue(await drive.exists('foo.txt'))
+
+    /**
+     * Overwrite existing file
+     */
+    await drive.put('foo.txt', 'hi world')
+    assert.equal((await drive.get('foo.txt')).toString(), 'hi world')
+
+    await drive.copy('foo.txt', 'bar.txt')
+    assert.equal((await drive.get('bar.txt')).toString(), 'hi world')
+    assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'bar.txt')))
+
+    await drive.move('bar.txt', 'baz.txt')
+    assert.isTrue(await drive.exists('baz.txt'))
+    assert.isFalse(await drive.exists('bar.txt'))
+    assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'baz.txt')))
+
+    await drive.move('foo.txt', 'baz.txt')
+    assert.isTrue(await drive.exists('baz.txt'))
+    assert.isFalse(await drive.exists('foo.txt'))
+
+    await drive.delete('baz.txt')
+    assert.isFalse(await drive.exists('baz.txt'))
+  })
 })
