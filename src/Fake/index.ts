@@ -8,6 +8,7 @@
  */
 
 import { DisksList, FakeDriveContract, FakeDriverContract } from '@ioc:Adonis/Core/Drive'
+import { CannotReadFileException } from '../Exceptions'
 
 /**
  * An implementation of the fake drive
@@ -22,15 +23,37 @@ export class FakeDrive implements FakeDriveContract {
    * Find a file for the given path exists. Searched
    * across all the faked disk
    */
-  public async exists(path: string): Promise<boolean> {
+  public async exists(location: string): Promise<boolean> {
     for (let [, fake] of this.fakes) {
-      const exists = await fake.exists(path)
+      const exists = await fake.exists(location)
       if (exists) {
         return true
       }
     }
 
     return false
+  }
+
+  /**
+   * Get the contents of the file as buffer
+   */
+  public async get(location: string): Promise<Buffer> {
+    for (let [, fake] of this.fakes) {
+      const exists = await fake.exists(location)
+      if (exists) {
+        return fake.get(location)
+      }
+    }
+
+    throw CannotReadFileException.invoke(location, new Error('File not found'))
+  }
+
+  /**
+   * Get the contents of the file as buffer
+   */
+  public async bytes(location: string): Promise<number> {
+    const contents = await this.get(location)
+    return contents.length
   }
 
   /**

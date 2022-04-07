@@ -125,13 +125,16 @@ export class DriveManager
   /**
    * Fake default or a named disk
    */
-  public fake(disk?: keyof DisksList) {
-    disk = disk || this.getDefaultMappingName()
+  public fake(disks?: keyof DisksList | keyof DisksList[]) {
+    disks = disks || this.getDefaultMappingName()
+    const disksToFake = Array.isArray(disks) ? disks : [disks]
 
-    if (!this.fakeDrive.isFaked(disk)) {
-      this.logger.trace({ disk: disk }, 'drive faking disk')
-      this.fakeDrive.fakes.set(disk, this.fakeCallback(this, disk, this.getMappingConfig(disk)))
-    }
+    disksToFake.forEach((disk) => {
+      if (!this.fakeDrive.isFaked(disk)) {
+        this.logger.trace({ disk: disk }, 'drive faking disk')
+        this.fakeDrive.fakes.set(disk, this.fakeCallback(this, disk, this.getMappingConfig(disk)))
+      }
+    })
 
     return this.fakeDrive
   }
@@ -139,13 +142,16 @@ export class DriveManager
   /**
    * Restore the fake for the default or a named disk
    */
-  public restore(disk?: keyof DisksList) {
-    disk = disk || this.getDefaultMappingName()
+  public restore(disks?: keyof DisksList | keyof DisksList[]) {
+    disks = disks || this.getDefaultMappingName()
+    const disksToRestore = Array.isArray(disks) ? disks : [disks]
 
-    if (this.fakeDrive.isFaked(disk)) {
-      this.logger.trace({ disk: disk }, 'drive restoring disk fake')
-      this.fakeDrive.restore(disk)
-    }
+    disksToRestore.forEach((disk) => {
+      if (this.fakeDrive.isFaked(disk)) {
+        this.logger.trace({ disk: disk }, 'drive restoring disk fake')
+        this.fakeDrive.restore(disk)
+      }
+    })
   }
 
   /**
