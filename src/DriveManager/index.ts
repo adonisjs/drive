@@ -24,6 +24,8 @@ import {
   LocalDriverConfig,
   DriveManagerContract,
   FakeImplementationCallback,
+  DirectoryListingContract,
+  DriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 import { FakeDrive } from '../Fake'
 
@@ -277,5 +279,12 @@ export class DriveManager
    */
   public move(source: string, ...args: any[]): Promise<void> {
     return this.use().move(source, ...args)
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<DriverContract, DriveListItem> {
+    return this.use().list(location)
   }
 }

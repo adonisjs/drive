@@ -48,6 +48,60 @@ declare module '@ioc:Adonis/Core/Drive' {
   }
 
   /**
+   * List item returned by the drive drivers
+   */
+  export type DriveListItem = {
+    location: string
+    isFile: boolean
+  }
+
+  /**
+   * Shape of the directory listing async iterable returned from list allowing to transform listing.
+   * This can be iterated directly using for-await-of loop or it can be converted to array using toArray().
+   */
+  export interface DirectoryListingContract<Driver extends DriverContract, T = DriveListItem>
+    extends AsyncIterable<T> {
+    /**
+     * Reference to the driver for which the listing was created.
+     */
+    driver: Driver
+
+    /**
+     * Filter generated items of listing with the given predicate function.
+     */
+    filter(
+      predicate: (item: T, index: number, driver: Driver) => Promise<boolean> | boolean
+    ): DirectoryListingContract<Driver, T>
+
+    /**
+     * Transform generated items of listing with the given mapper function.
+     */
+    map<M>(
+      mapper: (item: T, index: number, driver: Driver) => Promise<M> | M
+    ): DirectoryListingContract<Driver, M>
+
+    /**
+     * Add a piping chain function which gets the current async iterable and returns
+     * new async iterable with modified directory listing output.
+     * Function this is bound to instance of driver for which the listing is generated.
+     * This allows using async generator functions and reference the driver methods easily.
+     */
+    pipe<U>(
+      fn: (this: Driver, source: AsyncIterable<T>) => AsyncIterable<U>
+    ): DirectoryListingContract<Driver, U>
+
+    /**
+     * Get the final async iterable after passing directory listing through chain of piping functions modifying the output.
+     */
+    toIterable(): AsyncIterable<T>
+
+    /**
+     * Convert directory listing to array.
+     */
+    toArray(): Promise<T[]>
+  }
+
+  /**
    * Shape of the generic driver
    */
   export interface DriverContract {
@@ -131,6 +185,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * The missing intermediate directories will be created (if required)
      */
     move(source: string, destination: string, options?: WriteOptions): Promise<void>
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<this>
   }
 
   /**

@@ -11,6 +11,7 @@
 
 import etag from 'etag'
 import { Volume } from 'memfs'
+import type { Dirent } from 'memfs/lib/Dirent'
 import { dirname, join, isAbsolute } from 'path'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 
@@ -20,6 +21,8 @@ import {
   ContentHeaders,
   DriveFileStats,
   FakeDriverContract,
+  DirectoryListingContract,
+  DriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
@@ -32,7 +35,10 @@ import {
   CannotWriteFileException,
   CannotDeleteFileException,
   CannotGetMetaDataException,
+  CannotListDirectoryException,
 } from '../Exceptions'
+
+import { DirectoryListing } from '../DirectoryListing'
 
 /**
  * Memory driver is mainly used for testing
@@ -284,5 +290,27 @@ export class FakeDriver implements FakeDriverContract {
         }
       })
     }).then(() => this.delete(sourceAbsolutePath))
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<this, DriveListItem> {
+    return new DirectoryListing(this, async function* () {
+      try {
+        const dir = (await this.adapter.promises.readdir(this.makePath(location), {
+          withFileTypes: true,
+        })) as Dirent[]
+
+        for (const dirent of dir) {
+          yield {
+            location: `${location}/${dirent.name}`.replace(/^\/+|\/+$/g, ''),
+            isFile: dirent.isFile(),
+          }
+        }
+      } catch (error) {
+        throw CannotListDirectoryException.invoke(location, error)
+      }
+    })
   }
 }

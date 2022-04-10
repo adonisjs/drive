@@ -12,6 +12,7 @@
 import etag from 'etag'
 import * as fsExtra from 'fs-extra'
 import { dirname, join, isAbsolute } from 'path'
+import { DirectoryListing } from '../DirectoryListing'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 
 import {
@@ -20,6 +21,8 @@ import {
   ContentHeaders,
   LocalDriverConfig,
   LocalDriverContract,
+  DirectoryListingContract,
+  DriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
@@ -33,6 +36,7 @@ import {
   CannotGenerateUrlException,
   CannotDeleteFileException,
   CannotGetMetaDataException,
+  CannotListDirectoryException,
 } from '../Exceptions'
 
 /**
@@ -244,5 +248,25 @@ export class LocalDriver implements LocalDriverContract {
     } catch (error) {
       throw CannotMoveFileException.invoke(source, destination, error)
     }
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<this, DriveListItem> {
+    return new DirectoryListing(this, async function* () {
+      try {
+        const dir = await this.adapter.opendir(this.makePath(location))
+
+        for await (const dirent of dir) {
+          yield {
+            location: `${location}/${dirent.name}`.replace(/^\/+|\/+$/g, ''),
+            isFile: dirent.isFile(),
+          }
+        }
+      } catch (error) {
+        throw CannotListDirectoryException.invoke(location, error)
+      }
+    })
   }
 }
