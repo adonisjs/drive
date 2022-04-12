@@ -22,7 +22,7 @@ import {
   DriveFileStats,
   FakeDriverContract,
   DirectoryListingContract,
-  DriveListItem,
+  FakeDriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
@@ -295,7 +295,7 @@ export class FakeDriver implements FakeDriverContract {
   /**
    * Return a listing directory iterator for given location.
    */
-  public list(location: string): DirectoryListingContract<this, DriveListItem> {
+  public list(location: string): DirectoryListingContract<this, FakeDriveListItem> {
     return new DirectoryListing(this, async function* () {
       try {
         const dir = (await this.adapter.promises.readdir(this.makePath(location), {
@@ -306,6 +306,7 @@ export class FakeDriver implements FakeDriverContract {
           yield {
             location: `${location}/${dirent.name}`.replace(/^\/+|\/+$/g, ''),
             isFile: dirent.isFile(),
+            original: dirent,
           }
         }
       } catch (error) {

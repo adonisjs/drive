@@ -22,7 +22,7 @@ import {
   LocalDriverConfig,
   LocalDriverContract,
   DirectoryListingContract,
-  DriveListItem,
+  LocalDriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
@@ -253,7 +253,7 @@ export class LocalDriver implements LocalDriverContract {
   /**
    * Return a listing directory iterator for given location.
    */
-  public list(location: string): DirectoryListingContract<this, DriveListItem> {
+  public list(location: string): DirectoryListingContract<this, LocalDriveListItem> {
     return new DirectoryListing(this, async function* () {
       try {
         const dir = await this.adapter.opendir(this.makePath(location))
@@ -262,6 +262,7 @@ export class LocalDriver implements LocalDriverContract {
           yield {
             location: `${location}/${dirent.name}`.replace(/^\/+|\/+$/g, ''),
             isFile: dirent.isFile(),
+            original: dirent,
           }
         }
       } catch (error) {

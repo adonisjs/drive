@@ -9,6 +9,8 @@
 
 declare module '@ioc:Adonis/Core/Drive' {
   import * as fsExtra from 'fs-extra'
+  import type { Volume as MemfsVolume } from 'memfs/lib/volume'
+  import type { Dirent as MemfsDirent } from 'memfs/lib/Dirent'
   import { ManagerContract } from '@poppinss/manager'
   import { MacroableConstructorContract } from 'macroable'
   import { ApplicationContract } from '@ioc:Adonis/Core/Application'
@@ -51,16 +53,28 @@ declare module '@ioc:Adonis/Core/Drive' {
   /**
    * List item returned by the drive drivers
    */
-  export type DriveListItem = {
+  export interface DriveListItem<T = any> {
+    /**
+     * Location of list item on disk which can be used in driver methods
+     */
     location: string
+
+    /**
+     * Flag to know if item represents file or directory
+     */
     isFile: boolean
+
+    /**
+     * Original list item returned from underlying driver
+     */
+    original: T
   }
 
   /**
    * Shape of the directory listing async iterable returned from list allowing to transform listing.
    * This can be iterated directly using for-await-of loop or it can be converted to array using toArray().
    */
-  export interface DirectoryListingContract<Driver extends DriverContract, T = DriveListItem>
+  export interface DirectoryListingContract<Driver extends DriverContract, T>
     extends AsyncIterable<T> {
     /**
      * Reference to the driver for which the listing was created.
@@ -116,7 +130,7 @@ declare module '@ioc:Adonis/Core/Drive' {
   /**
    * Shape of the generic driver
    */
-  export interface DriverContract {
+  export interface DriverContract<T extends DriveListItem = DriveListItem> {
     /**
      * Name of the driver
      */
@@ -201,18 +215,28 @@ declare module '@ioc:Adonis/Core/Drive' {
     /**
      * Return a listing directory iterator for given location.
      */
-    list(location: string): DirectoryListingContract<this>
+    list(location: string): DirectoryListingContract<this, T>
   }
+
+  /**
+   * List item returned from fake disk driver
+   */
+  export interface FakeDriveListItem extends DriveListItem<MemfsDirent> {}
 
   /**
    * Shape of the fake implementation for the driver. Any custom implementation
    * must adhere to it.
    */
-  export interface FakeDriverContract extends DriverContract {
+  export interface FakeDriverContract extends DriverContract<FakeDriveListItem> {
     /**
      * The name is static
      */
     name: 'fake'
+
+    /**
+     * Reference to the underlying adapter. Which is memfs
+     */
+    adapter: MemfsVolume
 
     /**
      * The disk its faking
@@ -241,10 +265,19 @@ declare module '@ioc:Adonis/Core/Drive' {
   }
 
   /**
+   * List item returned from local disk driver
+   */
+  export interface LocalDriveListItem extends DriveListItem<fsExtra.Dirent> {}
+
+  /**
    * Shape of the local disk driver
    */
-  export interface LocalDriverContract extends DriverContract {
+  export interface LocalDriverContract extends DriverContract<LocalDriveListItem> {
     name: 'local'
+
+    /**
+     * Reference to the underlying adapter. Which is fs-extra
+     */
     adapter: typeof fsExtra
 
     /**

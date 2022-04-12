@@ -16,7 +16,7 @@ import { DirectoryListingContract, DriveListItem, DriverContract } from '@ioc:Ad
  * Directory listing exposes the API to list directory contents using async iterators
  * and also adds some helper functions for transforming the output of driver list.
  */
-export class DirectoryListing<Driver extends DriverContract, T = DriveListItem>
+export class DirectoryListing<Driver extends DriverContract, T extends DriveListItem>
   extends Macroable
   implements DirectoryListingContract<Driver, T>
 {
@@ -100,7 +100,7 @@ export class DirectoryListing<Driver extends DriverContract, T = DriveListItem>
   /**
    * A method that returns the default async iterator for an object.
    */
-  public async *[Symbol.asyncIterator](): AsyncIterator<T> {
+  public async *[Symbol.asyncIterator](): AsyncIterableIterator<T> {
     yield* this.toIterable()
   }
 }
