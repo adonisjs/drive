@@ -27,7 +27,9 @@ import {
   DirectoryListingContract,
   DriveListItem,
 } from '@ioc:Adonis/Core/Drive'
+
 import { FakeDrive } from '../Fake'
+import { DirectoryListing } from '../DirectoryListing'
 
 /**
  * Drive manager exposes the API to resolve disks and extend by
@@ -64,6 +66,11 @@ export class DriveManager
    * Cache all disks instances
    */
   protected singleton = true
+
+  /**
+   * Exposing DirectoryListing constructor to be extended from outside
+   */
+  public DirectoryListing = DirectoryListing
 
   /**
    * Reference to registered fakes

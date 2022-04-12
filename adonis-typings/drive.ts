@@ -10,6 +10,7 @@
 declare module '@ioc:Adonis/Core/Drive' {
   import * as fsExtra from 'fs-extra'
   import { ManagerContract } from '@poppinss/manager'
+  import { MacroableConstructorContract } from 'macroable'
   import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
   /**
@@ -99,6 +100,17 @@ declare module '@ioc:Adonis/Core/Drive' {
      * Convert directory listing to array.
      */
     toArray(): Promise<T[]>
+  }
+
+  /**
+   * Shape of the directory listing constructor, we export the constructor for others to add macros and getters to the class.
+   */
+  export interface DirectoryListingConstructorContract
+    extends MacroableConstructorContract<DirectoryListingContract<DriverContract, DriveListItem>> {
+    new (
+      driver: DriverContract,
+      listing: (this: DriverContract) => AsyncGenerator<DriveListItem>
+    ): DirectoryListingContract<DriverContract, DriveListItem>
   }
 
   /**
@@ -306,6 +318,11 @@ declare module '@ioc:Adonis/Core/Drive' {
         { [P in keyof DisksList]: DisksList[P]['implementation'] }
       >,
       Omit<DriverContract, 'name'> {
+    /**
+     * Exposing DirectoryListing constructor to be extended from outside
+     */
+    DirectoryListing: DirectoryListingConstructorContract
+
     /**
      * Access to the fake instances created so far.
      * @deprecated

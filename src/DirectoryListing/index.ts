@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import { Macroable } from 'macroable'
 import { DirectoryListingContract, DriveListItem, DriverContract } from '@ioc:Adonis/Core/Drive'
 
 /**
@@ -16,14 +17,23 @@ import { DirectoryListingContract, DriveListItem, DriverContract } from '@ioc:Ad
  * and also adds some helper functions for transforming the output of driver list.
  */
 export class DirectoryListing<Driver extends DriverContract, T = DriveListItem>
+  extends Macroable
   implements DirectoryListingContract<Driver, T>
 {
+  /**
+   * Required by macroable
+   */
+  protected static macros = {}
+  protected static getters = {}
+
   /**
    * Functions chain to be executed for transforming generated listing iterable
    */
   private chain: ((this: Driver, source: AsyncIterable<T>) => AsyncIterable<any>)[] = []
 
-  constructor(public driver: Driver, private listing: (this: Driver) => AsyncGenerator<T>) {}
+  constructor(public driver: Driver, private listing: (this: Driver) => AsyncGenerator<T>) {
+    super()
+  }
 
   /**
    * Filter generated items of listing with the given predicate function.
