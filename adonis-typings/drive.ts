@@ -312,7 +312,17 @@ declare module '@ioc:Adonis/Core/Drive' {
     /**
      * Find if a fake file exists
      */
-    exists(path: string): Promise<boolean>
+    exists(location: string): Promise<boolean>
+
+    /**
+     * Returns the file contents as a buffer.
+     */
+    get(location: string): Promise<Buffer>
+
+    /**
+     * Get the size of the file in bytes
+     */
+    bytes(location: string): Promise<number>
 
     /**
      * Find if the disk is faked
@@ -365,12 +375,12 @@ declare module '@ioc:Adonis/Core/Drive' {
     /**
      * Fake the default or a named disk
      */
-    fake(disk?: keyof DisksList): FakeDriveContract
+    fake(disk?: keyof DisksList | keyof DisksList[]): FakeDriveContract
 
     /**
      * Restore fake for the default or a named disk
      */
-    restore(disk?: keyof DisksList): void
+    restore(disk?: keyof DisksList | keyof DisksList[]): void
 
     /**
      * Restore all fakes

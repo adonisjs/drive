@@ -131,11 +131,11 @@ test.group('Drive Manager', (group) => {
     await drive.put('foo.txt', 'hello world')
     assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'foo.txt')))
 
-    assert.equal((await drive.get('foo.txt')).toString(), 'hello world')
+    assert.equal((await fakeDrive.get('foo.txt')).toString(), 'hello world')
     assert.isTrue(await fakeDrive.exists('foo.txt'))
 
     await drive.copy('foo.txt', 'bar.txt')
-    assert.equal((await drive.get('bar.txt')).toString(), 'hello world')
+    assert.equal((await fakeDrive.get('bar.txt')).toString(), 'hello world')
     assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'bar.txt')))
 
     await drive.move('bar.txt', 'baz.txt')
@@ -181,7 +181,7 @@ test.group('Drive Manager', (group) => {
 
     await drive.put('foo.txt', 'hello world')
     assert.isTrue(await fakeDrive.exists('foo.txt'))
-    assert.equal((await drive.get('foo.txt')).toString(), 'hello world')
+    assert.equal((await fakeDrive.get('foo.txt')).toString(), 'hello world')
 
     assert.isFalse(await drive.use('assets' as any).exists('foo.txt'))
 
@@ -217,7 +217,7 @@ test.group('Drive Manager', (group) => {
     const fakeDrive = drive.fake()
 
     await drive.put('foo.txt', 'hello world')
-    assert.equal((await drive.get('foo.txt')).toString(), 'hello world')
+    assert.equal((await fakeDrive.get('foo.txt')).toString(), 'hello world')
 
     drive.restore()
     assert.equal(drive.use().name, 'local')

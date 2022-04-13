@@ -165,6 +165,7 @@ export class FakeDriver implements FakeDriverContract {
       {
         expiresIn,
         qs,
+        disableRouteLookup: true,
       }
     )
   }
@@ -173,10 +174,16 @@ export class FakeDriver implements FakeDriverContract {
    * Returns a URL for a given location path
    */
   public async getUrl(location: string): Promise<string> {
-    return this.router.makeUrl('/__drive_fake', {
-      disk: this.disk,
-      [LocalFileServer.filePathParamName]: [location],
-    })
+    return this.router.makeUrl(
+      '/__drive_fake',
+      {
+        disk: this.disk,
+        [LocalFileServer.filePathParamName]: [location],
+      },
+      {
+        disableRouteLookup: true,
+      }
+    )
   }
 
   /**
