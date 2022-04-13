@@ -100,6 +100,8 @@ declare module '@ioc:Adonis/Core/Drive' {
      * new async iterable with modified directory listing output.
      * Function this is bound to instance of driver for which the listing is generated.
      * This allows using async generator functions and reference the driver methods easily.
+     * Piping will always return clone of the current instance and add the function
+     * to the chain of new cloned instance only to prevent side effects.
      */
     pipe<U>(
       fn: (this: Driver, source: AsyncIterable<T>) => AsyncIterable<U>

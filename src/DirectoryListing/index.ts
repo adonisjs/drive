@@ -68,10 +68,13 @@ export class DirectoryListing<Driver extends DriverContract, T extends DriveList
    * new async iterable with modified directory listing output.
    * Function this is bound to instance of driver for which the listing is generated.
    * This allows using async generator functions and reference the driver methods easily.
+   * Piping will always return clone of the current instance and add the function
+   * to the chain of new cloned instance only to prevent side effects.
    */
   public pipe<U>(fn: (this: Driver, iterable: AsyncIterable<T>) => AsyncIterable<U>) {
-    this.chain.push(fn)
-    return this as unknown as DirectoryListingContract<Driver, U>
+    const clone = new DirectoryListing(this.driver, this.listing)
+    clone.chain = this.chain.concat(fn)
+    return clone as unknown as DirectoryListingContract<Driver, U>
   }
 
   /**
