@@ -98,8 +98,7 @@ export class LocalFileServer {
          */
 
         try {
-          const filePath = this.driver.makePath(location)
-          const stats = await this.driver.getStats(filePath)
+          const stats = await this.driver.getStats(location)
 
           /**
            * Ignore requests for directories
@@ -127,7 +126,7 @@ export class LocalFileServer {
           if (usingSignature && request.input('contentType')) {
             response.header('Content-Type', request.input('contentType'))
           } else {
-            response.type(extname(filePath))
+            response.type(extname(location))
           }
 
           /**
