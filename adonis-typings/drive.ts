@@ -96,6 +96,16 @@ declare module '@ioc:Adonis/Core/Drive' {
     ): DirectoryListingContract<Driver, M>
 
     /**
+     * Do recursive listing of items. Without the next function it will do listing of leaf nodes only.
+     * For advanced usage you can pass the next function which will get as parameter current item and it should
+     * return the next location for list or null if the recursion should stop and yield the current item.
+     * For advanced usage you can also limit the depth of recursion using the second parameter of next function.
+     */
+    recursive(
+      next?: (current: T, depth: number, driver: Driver) => Promise<string | null> | string | null
+    ): DirectoryListingContract<Driver, T>
+
+    /**
      * Add a piping chain function which gets the current async iterable and returns
      * new async iterable with modified directory listing output.
      * Function this is bound to instance of driver for which the listing is generated.
