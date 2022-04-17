@@ -42,9 +42,10 @@ export class PathPrefixer {
    * It also guards against path traversal beyond the root.
    */
   public normalizePath(path: string): string {
+    const converted = slash(path)
     const parts: string[] = []
 
-    for (const part of slash(path).split(this.separator)) {
+    for (const part of converted.split(this.separator)) {
       if (['', '.'].includes(part)) {
         continue
       }
@@ -52,7 +53,7 @@ export class PathPrefixer {
       if (part === '..') {
         // if we are traversing beyond the root
         if (parts.length === 0) {
-          throw PathTraversalDetectedException.invoke(path)
+          throw PathTraversalDetectedException.invoke(converted)
         }
 
         parts.pop()
