@@ -522,3 +522,81 @@ test.group('Local driver | getSignedUrl', (group) => {
     assert.match(url, /\/uploads\/foo\.txt\?signature=.*/)
   })
 })
+
+test.group('Local driver | list', (group) => {
+  group.each.teardown(async () => {
+    await fs.cleanup()
+  })
+
+  const files = ['foo.txt', 'bar/baz/foo.txt', 'foo/bar.js', 'dir/a.txt', 'dir/b.js', 'dir/c.png']
+
+  test('list directory contents in "{path}"')
+    .with([
+      { path: '.', contents: { 'foo.txt': true, 'bar': false, 'foo': false, 'dir': false } },
+      { path: 'dir', contents: { 'dir/a.txt': true, 'dir/b.js': true, 'dir/c.png': true } },
+      { path: 'bar/baz', contents: { 'bar/baz/foo.txt': true } },
+    ])
+    .run(async ({ assert }, { path, contents }) => {
+      const app = await setupApp()
+      const router = app.container.resolveBinding('Adonis/Core/Route')
+      const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
+      const driver = new LocalDriver('local', config, router)
+
+      await Promise.all(files.map((file) => driver.put(file, file)))
+      const list = await driver.list(path).toArray()
+
+      assert.containsSubset(
+        list,
+        Object.entries(contents).map(([location, isFile]) => ({ location, isFile }))
+      )
+    })
+
+  test('list directory contents recursively in "{path}"')
+    .with([
+      {
+        path: '.',
+        contents: {
+          'foo.txt': true,
+          'bar/baz/foo.txt': true,
+          'foo/bar.js': true,
+          'dir/a.txt': true,
+          'dir/b.js': true,
+          'dir/c.png': true,
+        },
+      },
+      { path: 'dir', contents: { 'dir/a.txt': true, 'dir/b.js': true, 'dir/c.png': true } },
+      { path: 'bar', contents: { 'bar/baz/foo.txt': true } },
+    ])
+    .run(async ({ assert }, { path, contents }) => {
+      const app = await setupApp()
+      const router = app.container.resolveBinding('Adonis/Core/Route')
+      const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
+      const driver = new LocalDriver('local', config, router)
+
+      await Promise.all(files.map((file) => driver.put(file, file)))
+      const list = await driver.list(path).recursive().toArray()
+
+      assert.containsSubset(
+        list,
+        Object.entries(contents).map(([location, isFile]) => ({ location, isFile }))
+      )
+    })
+
+  test('return error when directory does not exist', async ({ assert }) => {
+    assert.plan(1)
+    const app = await setupApp()
+    const router = app.container.resolveBinding('Adonis/Core/Route')
+    const config = { driver: 'local' as const, root: TEST_ROOT, visibility: 'public' as const }
+
+    const driver = new LocalDriver('local', config, router)
+
+    try {
+      await driver.list('foo').toArray()
+    } catch (error) {
+      assert.equal(
+        error.message,
+        'E_CANNOT_LIST_DIRECTORY: Cannot list directory contents of location "foo"'
+      )
+    }
+  })
+})
