@@ -8,7 +8,9 @@
     "build/providers",
     "build/src",
     "build/standalone.d.ts",
-    "build/standalone.js"
+    "build/standalone.js",
+    "build/config.d.ts",
+    "build/config.js"
   ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
