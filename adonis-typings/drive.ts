@@ -299,6 +299,17 @@ declare module '@ioc:Adonis/Core/Drive' {
   }
 
   /**
+   * List of registered drivers. Drivers shipped via other packages
+   * should merge drivers to this interface
+   */
+  export interface DriversList {
+    local: {
+      implementation: LocalDriverContract
+      config: LocalDriverConfig
+    }
+  }
+
+  /**
    * A list of disks registered in the user land
    */
   export interface DisksList {}
