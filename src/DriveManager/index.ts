@@ -298,6 +298,16 @@ export class DriveManager
    * Return a listing directory iterator for given location.
    */
   public list(location: string): DirectoryListingContract<DriverContract, DriveListItem> {
-    return this.use().list(location)
+    const driver = this.use()
+
+    if (typeof driver.list !== 'function') {
+      throw new Exception(
+        `List is not supported by the "${driver.name}" driver.`,
+        500,
+        'E_LIST_NOT_SUPPORTED'
+      )
+    }
+
+    return driver.list(location)
   }
 }

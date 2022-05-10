@@ -142,7 +142,7 @@ declare module '@ioc:Adonis/Core/Drive' {
   /**
    * Shape of the generic driver
    */
-  export interface DriverContract<T extends DriveListItem = DriveListItem> {
+  export interface DriverContract {
     /**
      * Name of the driver
      */
@@ -227,7 +227,7 @@ declare module '@ioc:Adonis/Core/Drive' {
     /**
      * Return a listing directory iterator for given location.
      */
-    list(location: string): DirectoryListingContract<this, T>
+    list?(location: string): DirectoryListingContract<this, DriveListItem>
   }
 
   /**
@@ -239,7 +239,7 @@ declare module '@ioc:Adonis/Core/Drive' {
    * Shape of the fake implementation for the driver. Any custom implementation
    * must adhere to it.
    */
-  export interface FakeDriverContract extends DriverContract<FakeDriveListItem> {
+  export interface FakeDriverContract extends DriverContract {
     /**
      * The name is static
      */
@@ -259,6 +259,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * Make path to a given file location
      */
     makePath(location: string): string
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<this, FakeDriveListItem>
   }
 
   /**
@@ -284,7 +289,7 @@ declare module '@ioc:Adonis/Core/Drive' {
   /**
    * Shape of the local disk driver
    */
-  export interface LocalDriverContract extends DriverContract<LocalDriveListItem> {
+  export interface LocalDriverContract extends DriverContract {
     name: 'local'
 
     /**
@@ -296,6 +301,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * Make path to a given file location
      */
     makePath(location: string): string
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<this, LocalDriveListItem>
   }
 
   /**
@@ -415,6 +425,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * will be created anytime a fake is created
      */
     setFakeImplementation(callback: FakeImplementationCallback): void
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<DriverContract, DriveListItem>
   }
 
   const Drive: DriveManagerContract
