@@ -624,7 +624,7 @@ test.group('Local driver | list', (group) => {
         .map(({ location }) => `~${location}`)
         .toArray()
 
-      assert.deepEqual(list, contents)
+      assert.sameMembers(list, contents)
     })
 
   test('pipe contents of "{path}" directory through transformer')
@@ -665,7 +665,7 @@ test.group('Local driver | list', (group) => {
 
       const list = await driver.list(path).pipe(pipe).toArray()
 
-      assert.deepEqual(list, contents)
+      assert.sameDeepMembers(list, contents)
     })
 
   test('return error when directory does not exist', async ({ assert }) => {
