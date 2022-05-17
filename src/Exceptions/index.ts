@@ -179,3 +179,43 @@ export class CannotGenerateUrlException extends Exception {
     return error
   }
 }
+
+/**
+ * Unable to list directory contents of given location
+ */
+export class CannotListDirectoryException extends Exception {
+  public location: string
+  public original: any
+
+  public static invoke(location: string, original: any) {
+    const error = new this(
+      `Cannot list directory contents of location "${location}"`,
+      500,
+      'E_CANNOT_LIST_DIRECTORY'
+    )
+
+    error.location = location
+    error.original = original
+
+    return error
+  }
+}
+
+/**
+ * Given location is trying to traverse beyond the root path
+ */
+export class PathTraversalDetectedException extends Exception {
+  public location: string
+
+  public static invoke(location: string) {
+    const error = new this(
+      `Path traversal detected: "${location}"`,
+      500,
+      'E_PATH_TRAVERSAL_DETECTED'
+    )
+
+    error.location = location
+
+    return error
+  }
+}

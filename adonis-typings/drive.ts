@@ -9,6 +9,8 @@
 
 declare module '@ioc:Adonis/Core/Drive' {
   import * as fsExtra from 'fs-extra'
+  import type { Volume as MemfsVolume } from 'memfs/lib/volume'
+  import type { Dirent as MemfsDirent } from 'memfs/lib/Dirent'
   import { ManagerContract } from '@poppinss/manager'
   import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
@@ -45,6 +47,84 @@ declare module '@ioc:Adonis/Core/Drive' {
     modified: Date
     isFile: boolean
     etag?: string
+  }
+
+  /**
+   * List item returned by the drive drivers
+   */
+  export interface DriveListItem<T = any> {
+    /**
+     * Location of list item on disk which can be used in driver methods
+     */
+    location: string
+
+    /**
+     * Flag to know if item represents file or directory
+     */
+    isFile: boolean
+
+    /**
+     * Original list item returned from underlying driver
+     */
+    original: T
+  }
+
+  /**
+   * Shape of the directory listing async iterable returned from list allowing to transform listing.
+   * This can be iterated directly using for-await-of loop or it can be converted to array using toArray().
+   */
+  export interface DirectoryListingContract<Driver extends DriverContract, T>
+    extends AsyncIterable<T> {
+    /**
+     * Reference to the driver for which the listing was created.
+     */
+    driver: Driver
+
+    /**
+     * Filter generated items of listing with the given predicate function.
+     */
+    filter(
+      predicate: (item: T, index: number, driver: Driver) => Promise<boolean> | boolean
+    ): DirectoryListingContract<Driver, T>
+
+    /**
+     * Transform generated items of listing with the given mapper function.
+     */
+    map<M>(
+      mapper: (item: T, index: number, driver: Driver) => Promise<M> | M
+    ): DirectoryListingContract<Driver, M>
+
+    /**
+     * Do recursive listing of items. Without the next function it will do listing of leaf nodes only.
+     * For advanced usage you can pass the next function which will get as parameter current item and it should
+     * return the next location for list or null if the recursion should stop and yield the current item.
+     * For advanced usage you can also limit the depth of recursion using the second argument of next function.
+     */
+    recursive(
+      next?: (current: T, depth: number, driver: Driver) => Promise<string | null> | string | null
+    ): DirectoryListingContract<Driver, T>
+
+    /**
+     * Add a piping chain function which gets the current async iterable and returns
+     * new async iterable with modified directory listing output.
+     * Function this is bound to instance of driver for which the listing is generated.
+     * This allows using async generator functions and reference the driver methods easily.
+     * Piping will always return clone of the current instance and add the function
+     * to the chain of new cloned instance only to prevent side effects.
+     */
+    pipe<U>(
+      fn: (this: Driver, source: AsyncIterable<T>) => AsyncIterable<U>
+    ): DirectoryListingContract<Driver, U>
+
+    /**
+     * Get the final async iterable after passing directory listing through chain of piping functions modifying the output.
+     */
+    toIterable(): AsyncIterable<T>
+
+    /**
+     * Convert directory listing to array.
+     */
+    toArray(): Promise<T[]>
   }
 
   /**
@@ -131,7 +211,17 @@ declare module '@ioc:Adonis/Core/Drive' {
      * The missing intermediate directories will be created (if required)
      */
     move(source: string, destination: string, options?: WriteOptions): Promise<void>
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list?(location: string): DirectoryListingContract<this, DriveListItem>
   }
+
+  /**
+   * List item returned from fake disk driver
+   */
+  export interface FakeDriveListItem extends DriveListItem<MemfsDirent> {}
 
   /**
    * Shape of the fake implementation for the driver. Any custom implementation
@@ -144,6 +234,11 @@ declare module '@ioc:Adonis/Core/Drive' {
     name: 'fake'
 
     /**
+     * Reference to the underlying adapter. Which is memfs
+     */
+    adapter: MemfsVolume
+
+    /**
      * The disk its faking
      */
     disk: keyof DisksList
@@ -152,6 +247,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * Make path to a given file location
      */
     makePath(location: string): string
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<this, FakeDriveListItem>
   }
 
   /**
@@ -170,16 +270,30 @@ declare module '@ioc:Adonis/Core/Drive' {
   }
 
   /**
+   * List item returned from local disk driver
+   */
+  export interface LocalDriveListItem extends DriveListItem<fsExtra.Dirent> {}
+
+  /**
    * Shape of the local disk driver
    */
   export interface LocalDriverContract extends DriverContract {
     name: 'local'
+
+    /**
+     * Reference to the underlying adapter. Which is fs-extra
+     */
     adapter: typeof fsExtra
 
     /**
      * Make path to a given file location
      */
     makePath(location: string): string
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<this, LocalDriveListItem>
   }
 
   /**
@@ -294,6 +408,11 @@ declare module '@ioc:Adonis/Core/Drive' {
      * will be created anytime a fake is created
      */
     setFakeImplementation(callback: FakeImplementationCallback): void
+
+    /**
+     * Return a listing directory iterator for given location.
+     */
+    list(location: string): DirectoryListingContract<DriverContract, DriveListItem>
   }
 
   const Drive: DriveManagerContract

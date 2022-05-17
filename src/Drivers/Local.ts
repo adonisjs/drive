@@ -11,7 +11,8 @@
 
 import etag from 'etag'
 import * as fsExtra from 'fs-extra'
-import { dirname, join, isAbsolute } from 'path'
+import { dirname } from 'path'
+import { DirectoryListing } from '../DirectoryListing'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 
 import {
@@ -20,10 +21,13 @@ import {
   ContentHeaders,
   LocalDriverConfig,
   LocalDriverContract,
+  DirectoryListingContract,
+  LocalDriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
 import { LocalFileServer } from '../LocalFileServer'
+import { PathPrefixer } from '../PathPrefixer'
 
 import {
   CannotCopyFileException,
@@ -33,6 +37,7 @@ import {
   CannotGenerateUrlException,
   CannotDeleteFileException,
   CannotGetMetaDataException,
+  CannotListDirectoryException,
 } from '../Exceptions'
 
 /**
@@ -52,6 +57,11 @@ export class LocalDriver implements LocalDriverContract {
    */
   public name: 'local' = 'local'
 
+  /**
+   * Path prefixer used for prefixing paths with disk root
+   */
+  private prefixer = PathPrefixer.fromPath(this.config.root)
+
   constructor(
     private diskName: string,
     private config: LocalDriverConfig,
@@ -62,7 +72,7 @@ export class LocalDriver implements LocalDriverContract {
    * Make absolute path to a given location
    */
   public makePath(location: string) {
-    return isAbsolute(location) ? location : join(this.config.root, location)
+    return this.prefixer.prefixPath(location)
   }
 
   /**
@@ -138,7 +148,7 @@ export class LocalDriver implements LocalDriverContract {
     const { expiresIn, ...qs } = options || {}
     return this.router.makeSignedUrl(
       this.routeName,
-      { [LocalFileServer.filePathParamName]: [location] },
+      { [LocalFileServer.filePathParamName]: [this.prefixer.normalizePath(location)] },
       {
         expiresIn,
         qs,
@@ -154,7 +164,9 @@ export class LocalDriver implements LocalDriverContract {
       throw CannotGenerateUrlException.invoke(location, this.diskName)
     }
 
-    return this.router.makeUrl(this.routeName, { [LocalFileServer.filePathParamName]: [location] })
+    return this.router.makeUrl(this.routeName, {
+      [LocalFileServer.filePathParamName]: [this.prefixer.normalizePath(location)],
+    })
   }
 
   /**
@@ -244,5 +256,29 @@ export class LocalDriver implements LocalDriverContract {
     } catch (error) {
       throw CannotMoveFileException.invoke(source, destination, error)
     }
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<this, LocalDriveListItem> {
+    const fullPath = this.makePath(location)
+
+    return new DirectoryListing(this, async function* () {
+      try {
+        const dir = await this.adapter.opendir(fullPath)
+        const prefixer = this.prefixer.withStrippedPrefix(fullPath)
+
+        for await (const dirent of dir) {
+          yield {
+            location: prefixer.prefixPath(dirent.name),
+            isFile: dirent.isFile(),
+            original: dirent,
+          }
+        }
+      } catch (error) {
+        throw CannotListDirectoryException.invoke(location, error)
+      }
+    })
   }
 }

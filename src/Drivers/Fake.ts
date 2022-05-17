@@ -11,7 +11,8 @@
 
 import etag from 'etag'
 import { Volume } from 'memfs'
-import { dirname, join, isAbsolute } from 'path'
+import type { Dirent } from 'memfs/lib/Dirent'
+import { dirname } from 'path'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 
 import {
@@ -20,6 +21,8 @@ import {
   ContentHeaders,
   DriveFileStats,
   FakeDriverContract,
+  DirectoryListingContract,
+  FakeDriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import { pipelinePromise } from '../utils'
@@ -32,7 +35,11 @@ import {
   CannotWriteFileException,
   CannotDeleteFileException,
   CannotGetMetaDataException,
+  CannotListDirectoryException,
 } from '../Exceptions'
+
+import { DirectoryListing } from '../DirectoryListing'
+import { PathPrefixer } from '../PathPrefixer'
 
 /**
  * Memory driver is mainly used for testing
@@ -49,9 +56,13 @@ export class FakeDriver implements FakeDriverContract {
   public name: 'fake' = 'fake'
 
   /**
-   * Root dir for memfs doesn't play any role
+   * Path prefixer used for prefixing paths with disk root
+   * It doesn't play any role but we will try to construct same path as faked driver is using
+   * We use the root path if it is available for driver and also add prefix if provided
    */
-  private rootDir = './'
+  private prefixer = PathPrefixer.fromPath(this.config.root || '/').withPrefix(
+    this.config.prefix || ''
+  )
 
   /**
    * Rely on the config for visibility or fallback to private
@@ -64,7 +75,7 @@ export class FakeDriver implements FakeDriverContract {
    * Make absolute path to a given location
    */
   public makePath(location: string) {
-    return isAbsolute(location) ? location : join(this.rootDir, location)
+    return this.prefixer.prefixPath(location)
   }
 
   /**
@@ -155,7 +166,10 @@ export class FakeDriver implements FakeDriverContract {
 
     return this.router.makeSignedUrl(
       '/__drive_fake',
-      { disk: this.disk, [LocalFileServer.filePathParamName]: [location] },
+      {
+        disk: this.disk,
+        [LocalFileServer.filePathParamName]: [this.prefixer.normalizePath(location)],
+      },
       {
         expiresIn,
         qs,
@@ -172,7 +186,7 @@ export class FakeDriver implements FakeDriverContract {
       '/__drive_fake',
       {
         disk: this.disk,
-        [LocalFileServer.filePathParamName]: [location],
+        [LocalFileServer.filePathParamName]: [this.prefixer.normalizePath(location)],
       },
       {
         disableRouteLookup: true,
@@ -290,6 +304,32 @@ export class FakeDriver implements FakeDriverContract {
           resolve()
         }
       })
-    }).then(() => this.delete(sourceAbsolutePath))
+    }).then(() => this.delete(source))
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<this, FakeDriveListItem> {
+    const fullPath = this.makePath(location)
+
+    return new DirectoryListing(this, async function* () {
+      try {
+        const dir = (await this.adapter.promises.readdir(fullPath, {
+          withFileTypes: true,
+        })) as Dirent[]
+        const prefixer = this.prefixer.withStrippedPrefix(fullPath)
+
+        for (const dirent of dir) {
+          yield {
+            location: prefixer.prefixPath(dirent.name as string),
+            isFile: dirent.isFile(),
+            original: dirent,
+          }
+        }
+      } catch (error) {
+        throw CannotListDirectoryException.invoke(location, error)
+      }
+    })
   }
 }
