@@ -214,6 +214,7 @@ declare module '@ioc:Adonis/Core/Drive' {
 
     /**
      * Return a listing directory iterator for given location.
+     * @experimental
      */
     list?(location: string): DirectoryListingContract<this, DriveListItem>
   }
@@ -250,6 +251,7 @@ declare module '@ioc:Adonis/Core/Drive' {
 
     /**
      * Return a listing directory iterator for given location.
+     * @experimental
      */
     list(location: string): DirectoryListingContract<this, FakeDriveListItem>
   }
@@ -292,6 +294,7 @@ declare module '@ioc:Adonis/Core/Drive' {
 
     /**
      * Return a listing directory iterator for given location.
+     * @experimental
      */
     list(location: string): DirectoryListingContract<this, LocalDriveListItem>
   }
@@ -411,6 +414,7 @@ declare module '@ioc:Adonis/Core/Drive' {
 
     /**
      * Return a listing directory iterator for given location.
+     * @experimental
      */
     list(location: string): DirectoryListingContract<DriverContract, DriveListItem>
   }
