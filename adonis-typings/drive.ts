@@ -23,6 +23,7 @@ declare module '@ioc:Adonis/Core/Drive' {
     contentEncoding?: string
     contentDisposition?: string
     cacheControl?: string
+    contentLength?: string | number
   }
 
   /**
