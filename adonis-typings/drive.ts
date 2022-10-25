@@ -395,12 +395,12 @@ declare module '@ioc:Adonis/Core/Drive' {
     /**
      * Fake the default or a named disk
      */
-    fake(disk?: keyof DisksList | keyof DisksList[]): FakeDriveContract
+    fake(disk?: keyof DisksList | (keyof DisksList)[]): FakeDriveContract
 
     /**
      * Restore fake for the default or a named disk
      */
-    restore(disk?: keyof DisksList | keyof DisksList[]): void
+    restore(disk?: keyof DisksList | (keyof DisksList)[]): void
 
     /**
      * Restore all fakes
