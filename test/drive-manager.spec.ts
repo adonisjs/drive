@@ -190,6 +190,49 @@ test.group('Drive Manager', (group) => {
     assert.equal(drive.use('assets' as any).name, 'local')
   })
 
+  test('fake two disks', async ({ assert }) => {
+    const app = await setupApp()
+
+    const config = {
+      disk: 'local' as const,
+      disks: {
+        local: {
+          driver: 'local' as const,
+          root: join(fs.basePath, 'storage'),
+          basePath: '/uploads',
+          visibility: 'public' as const,
+        },
+        assets: {
+          driver: 'local' as const,
+          root: join(fs.basePath, 'storage'),
+          basePath: '/uploads',
+          visibility: 'public' as const,
+        },
+      },
+    }
+
+    const router = app.container.resolveBinding('Adonis/Core/Route')
+    const logger = app.container.resolveBinding('Adonis/Core/Logger')
+    const drive = new DriveManager(app, router, logger, config)
+    const fakeDrive = drive.fake(['local', 'assets' as any])
+
+    assert.isTrue(fakeDrive.isFaked('local'))
+
+    await drive.use('local').put('foo.txt', 'hello world')
+    assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'foo.txt')))
+
+    assert.equal((await fakeDrive.use('local').get('foo.txt')).toString(), 'hello world')
+    assert.isTrue(await fakeDrive.use('local').exists('foo.txt'))
+
+    assert.isTrue(fakeDrive.isFaked('assets' as any))
+
+    await drive.use('assets' as any).put('bar.txt', 'hello world')
+    assert.isFalse(await fs.fsExtra.pathExists(join(fs.basePath, 'storage', 'bar.txt')))
+
+    assert.equal((await fakeDrive.use('assets' as any).get('bar.txt')).toString(), 'hello world')
+    assert.isTrue(await fakeDrive.use('assets' as any).exists('bar.txt'))
+  })
+
   test('restore a fake', async ({ assert }) => {
     const app = await setupApp()
 

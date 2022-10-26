@@ -128,7 +128,7 @@ export class DriveManager
   /**
    * Fake default or a named disk
    */
-  public fake(disks?: keyof DisksList | keyof DisksList[]) {
+  public fake(disks?: keyof DisksList | (keyof DisksList)[]) {
     disks = disks || this.getDefaultMappingName()
     const disksToFake = Array.isArray(disks) ? disks : [disks]
 
@@ -145,7 +145,7 @@ export class DriveManager
   /**
    * Restore the fake for the default or a named disk
    */
-  public restore(disks?: keyof DisksList | keyof DisksList[]) {
+  public restore(disks?: keyof DisksList | (keyof DisksList)[]) {
     disks = disks || this.getDefaultMappingName()
     const disksToRestore = Array.isArray(disks) ? disks : [disks]
 
