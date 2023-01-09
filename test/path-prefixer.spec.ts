@@ -90,6 +90,11 @@ test.group('Path prefixer | prefixDirectoryPath', () => {
       { prefix: '/dir', path: '/subdir', expected: '/dir/subdir/' },
       { prefix: '', path: 'dir', expected: 'dir/' },
       { prefix: '', path: 'with-slash/', expected: 'with-slash/' },
+      { prefix: '', path: '.', expected: '' },
+      { prefix: '', path: '/', expected: '' },
+      { prefix: '', path: './', expected: '' },
+      { prefix: '/', path: '.', expected: '/' },
+      { prefix: 'prefix', path: '.', expected: 'prefix/' },
     ])
     .run(async ({ assert }, { prefix, path, expected }) => {
       const prefixer = new PathPrefixer(prefix)

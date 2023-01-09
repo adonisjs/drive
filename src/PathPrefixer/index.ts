@@ -77,7 +77,8 @@ export class PathPrefixer {
    * Useful for cloud drivers prefix when listitng files.
    */
   public prefixDirectoryPath(location: string): string {
-    return this.prefixPath(location) + this.separator
+    const prefixed = this.prefixPath(location)
+    return prefixed === this.prefix ? prefixed : prefixed + this.separator
   }
 
   /**
