@@ -114,14 +114,6 @@ The [Stale bot](https://github.com/apps/stale) is a Github application that auto
 
 You may optionally configure it at the time of scaffolding the package. 
 
-## Using CommitLint (optional)
-
-[Commitlint](https://commitlint.js.org/#/) is a tool to lint your git commit messages. You may optionally configure it to lint your commit messages after you run `git commit` command.
-
-- Commitlint is configured to use [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional).
-- [Husky](https://typicode.github.io/husky/#/) is configured to define Git hooks.
-- Finally, we make husky run commitlint everytime you run the `git commit` command.
-
 ## Unconfigurable bits
 
 - **License**: The `LICENSE.md` file and the `license` property inside the `package.json` file are set to `MIT`. You can change them manually.

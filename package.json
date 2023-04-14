@@ -1,7 +1,7 @@
 {
   "name": "{{ PACKAGE_NAME }}",
   "version": "0.0.0",
-  "description": "{{ PACKAGE_DESCRIPTION }}",
+  "description": "",
   "type": "module",
   "main": "build/index.js",
   "files": [
