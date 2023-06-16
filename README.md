@@ -99,14 +99,14 @@ The starter kit also comes with a Github workflow file to run tests using Github
 
 - The starter kit uses [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) for compiling the TypeScript to JavaScript at the time of publishing the package.
 - [TS-Node](https://typestrong.org/ts-node/) and [SWC](https://swc.rs/) are used to run tests without compiling the source code.
-- The `tsconfig.json` file uses `NodeNext` module system. Meaning the packages are written using ES modules.
+- The `tsconfig.json` file is extended from [`@adonisjs/tsconfig`](https://github.com/adonisjs/tooling-config/tree/main/packages/typescript-config) and uses `NodeNext` module system. Meaning the packages are written using ES modules.
 - You can perform type checking without compiling the source code using `npm run typecheck` script.
 
 Feel free to explore the `tsconfig.json` file for all the configured options.
 
 ## ESLint and Prettier setup
 
-The starter kit configures ESLint and Prettier. The configuration for both is stored within the `package.json` file. Feel free to change the config, use custom plugins or remove both tools altogether.
+The starter kit configures ESLint and Prettier. The configuration for both is stored within the `package.json` file, and use our [shared config](https://github.com/adonisjs/tooling-config/tree/main/packages). Feel free to change the config, use custom plugins or remove both tools altogether.
 
 ## Using Stale bot (optional)
 

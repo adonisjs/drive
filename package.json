@@ -40,6 +40,9 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/core": "^6.1.1-0",
+    "@adonisjs/eslint-config": "^1.1.2",
+    "@adonisjs/prettier-config": "^1.1.2",
+    "@adonisjs/tsconfig": "^1.1.2",
     "@japa/assert": "^1.4.1",
     "@japa/run-failed-tests": "^1.1.1",
     "@japa/runner": "^2.5.1",
@@ -62,35 +65,9 @@
     "@adonisjs/core": "^6.1.1-0"
   },
   "eslintConfig": {
-    "extends": [
-      "plugin:adonis/typescriptPackage",
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "endOfLine": "auto"
-        }
-      ]
-    }
+    "extends": "@adonisjs/eslint-config/typescript-package"
   },
-  "eslintIgnore": [
-    "build"
-  ],
-  "prettier": {
-    "trailingComma": "es5",
-    "semi": false,
-    "singleQuote": true,
-    "useTabs": false,
-    "quoteProps": "consistent",
-    "bracketSpacing": true,
-    "arrowParens": "always",
-    "printWidth": 100
-  },
+  "prettier": "@adonisjs/prettier-config",
   "publishConfig": {
     "access": "public",
     "tag": "latest"
