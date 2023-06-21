@@ -65,7 +65,7 @@
     "@adonisjs/core": "^6.1.1-0"
   },
   "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/typescript-package"
+    "extends": "@adonisjs/eslint-config/package"
   },
   "prettier": "@adonisjs/prettier-config",
   "publishConfig": {
