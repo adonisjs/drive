@@ -2,6 +2,9 @@
   "name": "{{ PACKAGE_NAME }}",
   "description": "",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=18.16.0"
+  },
   "main": "build/index.js",
   "type": "module",
   "files": [
