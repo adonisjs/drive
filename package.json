@@ -25,7 +25,7 @@
   "scripts": {
     "clean": "del-cli build",
     "copy:templates": "copyfiles \"stubs/**/*.stub\" build",
-    "typecheck": "tsc --no-emit",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
     "quick:test": "node --enable-source-maps --loader=ts-node/esm bin/test.ts",
