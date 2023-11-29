@@ -54,7 +54,7 @@
     "np": "^8.0.4",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "~5.2.2"
   },
   "peerDependencies": {
     "@adonisjs/core": "6.1.5-31"
