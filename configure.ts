@@ -14,4 +14,4 @@
 
 import ConfigureCommand from '@adonisjs/core/commands/configure'
 
-export async function configure(command: ConfigureCommand) {}
+export async function configure(_command: ConfigureCommand) {}
