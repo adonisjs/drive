@@ -34,7 +34,7 @@ The starter kit mimics the folder structure of the official packages. Feel free 
 
 - The `configure.ts` file exports the `configure` hook to configure the package using the `node ace configure` command.
 - The `index.ts` file is the main entry point of the package.
-- The `tsnode.esm.js` file runs TypeScript code using TS-NODE + SWC. Please read the code comment in this file to learn more.
+- The `tsnode.esm.js` file runs TypeScript code using TS-Node + SWC. Please read the code comment in this file to learn more.
 - The `bin` directory contains the entry point file to run Japa tests.
 - Learn more about [the `providers` directory](./providers/README.md).
 - Learn more about [the `src` directory](./src/README.md).

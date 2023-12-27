@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 |
 | Importing this file before any other file will allow you to run TypeScript
-| code directly using TS-NODE + SWC. For example
+| code directly using TS-Node + SWC. For example
 |
 | node --import="./tsnode.esm.js" bin/test.ts
 | node --import="./tsnode.esm.js" index.ts
