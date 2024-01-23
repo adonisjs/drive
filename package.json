@@ -5,7 +5,6 @@
   "engines": {
     "node": ">=18.16.0"
   },
-  "main": "build/index.js",
   "type": "module",
   "files": [
     "build/src",
