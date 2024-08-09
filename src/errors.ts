@@ -11,11 +11,11 @@ import { HttpContext } from '@adonisjs/core/http'
 import { Exception } from '@adonisjs/core/exceptions'
 
 /**
- * The exception is raised by the LocalFileServer when trying
- * to serve a file during an HTTP request.
+ * The exception is raised by the local file server when
+ * trying to serve a file during an HTTP request.
  */
 export class CannotServeFileException extends Exception {
-  #isInProdEnv = process.env.NODE_ENV === 'production'
+  debug = process.env.NODE_ENV !== 'production'
 
   constructor(originalError: any) {
     super('Cannot serve local file using drive', {
@@ -57,27 +57,16 @@ export class CannotServeFileException extends Exception {
    */
   handle(error: this, ctx: HttpContext) {
     /**
-     * Displaying error in production. Always falling back
-     * to 404 to avoid leaking internals of the app.
+     * In non-debug mode (aka production) we explicitly
+     * respond with a 404 response and a generic
+     * message.
      */
-    if (this.#isInProdEnv) {
-      return ctx.response.notFound('File not found')
+    if (!this.debug) {
+      return ctx.response.status(404).send('File not found')
     }
 
-    /**
-     * Displaying error during development
-     */
-    const { stack, status, message } = this.parseError(error)
-
-    switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
-      case 'application/vnd.api+json':
-        return ctx.response.status(status).send({ title: message, meta: { stack } })
-      case 'json':
-        return ctx.response.status(status).send({ message, stack })
-      case 'html':
-      default:
-        return ctx.response.status(status).send(`${message}\nStack:${stack}`)
-    }
+    let { stack, status, message } = this.parseError(error)
+    return ctx.response.status(status).send(`${message}${stack ? `\nStack:${stack}` : ''}`)
   }
 
   /**
@@ -89,7 +78,7 @@ export class CannotServeFileException extends Exception {
      */
     const { stack, status, message } = this.parseError(error)
 
-    if (status === 401) {
+    if (status === 404) {
       ctx.logger.warn(message)
     } else {
       ctx.logger.error({ err: stack }, message)

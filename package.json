@@ -7,15 +7,21 @@
   },
   "type": "module",
   "files": [
-    "build/src",
-    "build/providers",
-    "build/stubs",
-    "build/index.d.ts",
-    "build/index.js"
+    "build",
+    "!build/bin",
+    "!build/tests"
   ],
   "exports": {
     ".": "./build/index.js",
-    "./types": "./build/src/types.js"
+    "./types": "./build/src/types.js",
+    "./drive_provider": "./build/providers/drive_provider.js",
+    "./services/main": "./build/services/main.js",
+    "./drivers/fs": "./build/drivers/fs/main.js",
+    "./drivers/fs/types": "./build/drivers/fs/types.js",
+    "./drivers/s3": "./build/drivers/s3/main.js",
+    "./drivers/s3/types": "./build/drivers/s3/types.js",
+    "./drivers/gcs": "./build/drivers/gcs/main.js",
+    "./drivers/gcs/types": "./build/drivers/gcs/types.js"
   },
   "scripts": {
     "clean": "del-cli build",
@@ -27,28 +33,21 @@
     "pretest": "npm run lint",
     "test": "c8 npm run quick:test",
     "prebuild": "npm run lint && npm run clean",
-    "build": "tsc",
+    "build": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "postbuild": "npm run copy:templates",
     "release": "np",
     "version": "npm run build",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [
-    "drive",
-    "flydrive",
-    "s3",
-    "gcs",
-    "r2",
-    "fs"
-  ],
-  "author": "vir,adonisjs",
-  "license": "MIT",
   "devDependencies": {
     "@adonisjs/assembler": "^7.7.0",
     "@adonisjs/core": "^6.12.1",
     "@adonisjs/eslint-config": "^1.3.0",
     "@adonisjs/prettier-config": "^1.3.0",
     "@adonisjs/tsconfig": "^1.3.0",
+    "@aws-sdk/client-s3": "^3.627.0",
+    "@aws-sdk/s3-request-presigner": "^3.627.0",
+    "@google-cloud/storage": "^7.12.1",
     "@japa/assert": "^3.0.0",
     "@japa/runner": "^3.1.4",
     "@swc-node/register": "^1.10.9",
@@ -63,11 +62,29 @@
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
+    "tsup": "^8.2.4",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "flydrive": "^1.0.2"
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.2.0"
   },
+  "author": "vir,adonisjs",
+  "license": "MIT",
+  "keywords": [
+    "drive",
+    "flydrive",
+    "s3",
+    "gcs",
+    "r2",
+    "fs"
+  ],
+  "eslintConfig": {
+    "extends": "@adonisjs/eslint-config/package"
+  },
+  "prettier": "@adonisjs/prettier-config",
   "publishConfig": {
     "access": "public",
     "tag": "latest"
@@ -87,11 +104,24 @@
       "tests/**"
     ]
   },
-  "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/package"
-  },
-  "prettier": "@adonisjs/prettier-config",
-  "dependencies": {
-    "flydrive": "^1.0.2"
+  "tsup": {
+    "entry": [
+      "index.ts",
+      "src/types.ts",
+      "providers/drive_provider.ts",
+      "services/main.ts",
+      "drivers/fs/main.ts",
+      "drivers/fs/types.ts",
+      "drivers/s3/main.ts",
+      "drivers/s3/types.ts",
+      "drivers/gcs/main.ts",
+      "drivers/gcs/types.ts"
+    ],
+    "outDir": "./build",
+    "clean": true,
+    "format": "esm",
+    "dts": false,
+    "sourcemap": true,
+    "target": "esnext"
   }
 }

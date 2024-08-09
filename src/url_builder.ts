@@ -9,7 +9,7 @@
 
 import type { Router } from '@adonisjs/core/http'
 import type { AdonisFSDriverOptions } from './types.js'
-import type { FSDriverOptions } from '../drivers/fs/types.js'
+import type { FSDriverOptions } from 'flydrive/drivers/fs/types'
 
 /**
  * Creates the URL builder for the flydrive "fs" driver.

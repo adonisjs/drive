@@ -10,6 +10,7 @@
 import { HttpContext, Router } from '@adonisjs/core/http'
 import { AppFactory } from '@adonisjs/core/factories/app'
 import { IncomingMessage, ServerResponse } from 'node:http'
+import type { ApplicationService } from '@adonisjs/core/types'
 import { EncryptionFactory } from '@adonisjs/core/factories/encryption'
 import {
   RequestFactory,
@@ -18,19 +19,27 @@ import {
   HttpContextFactory,
 } from '@adonisjs/core/factories/http'
 
+import { Disk } from '../index.js'
+import { FSDriver } from '../drivers/fs/main.js'
 import type { AdonisFSDriverOptions } from '../src/types.js'
-import { FSDriverOptions } from 'flydrive/drivers/fs/types'
-import { Disk } from 'flydrive'
-import { FSDriver } from 'flydrive/drivers/fs'
+import type { FSDriverOptions } from '../drivers/fs/types.js'
 
 export const BASE_URL = new URL('./', import.meta.url)
 const qs = new QsParserFactory().create()
-const app = new AppFactory().create(BASE_URL)
+const app = new AppFactory().create(BASE_URL) as unknown as ApplicationService
 const encryption = new EncryptionFactory().create()
 
 export function createRouter() {
   const router = new Router(app, encryption, qs)
   return router
+}
+
+export function createAppWithRouter() {
+  const application = new AppFactory().create(BASE_URL) as unknown as ApplicationService
+  application.init()
+
+  application.container.bind('router', () => createRouter())
+  return application
 }
 
 export function getFSDriverConfig(
@@ -44,7 +53,7 @@ export function getFSDriverConfig(
   }
 }
 
-export function createHttpContext(req: IncomingMessage, res: ServerResponse) {
+export function createHttpContext(req?: IncomingMessage, res?: ServerResponse) {
   const request = new RequestFactory().merge({ req, res }).create()
   const response = new ResponseFactory().merge({ req, res }).create()
   return new HttpContextFactory().merge({ request, response }).create()

@@ -7,12 +7,13 @@
  * file that was distributed with this source code.
  */
 
+import { Disk, DriveManager } from 'flydrive'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { Disk, DriveManager } from '../index.js'
-import type { DriveService } from '../src/types.js'
+import { createFileServer } from '../src/file_server.js'
+import type { DriveService, ServiceWithLocalServer } from '../src/types.js'
 
 /**
  * Extending the container with a custom service
@@ -23,26 +24,70 @@ declare module '@adonisjs/core/types' {
   }
 }
 
+/**
+ * Drive Provider registers a singleton drive manager services
+ * to the IoC container and wires up the routing to serve
+ * files from the "fs" driver.
+ */
 export default class DriveProvider {
+  /**
+   * Collection of services using the "fs" driver and want
+   * to serve files using the AdonisJS HTTP server.
+   */
+  #locallyServedServices: ServiceWithLocalServer[] = []
+
   constructor(protected app: ApplicationService) {}
 
   register() {
     this.app.container.singleton('drive.manager', async () => {
-      const driveConfigProvider = await this.app.config.get('drive')
-      const config = await configProvider.resolve<any>(this.app, driveConfigProvider)
+      /**
+       * Resolving config from the "config/drive.ts" file and
+       * expecting it to be a config provider.
+       */
+      const driveConfigProvider = this.app.config.get('drive')
+      const config = await configProvider.resolve<{
+        config: any
+        locallyServed: ServiceWithLocalServer[]
+      }>(this.app, driveConfigProvider)
 
+      /**
+       * Ensure the returned value is the output of the
+       * config provider
+       */
       if (!config) {
         throw new RuntimeException(
           'Invalid "config/drive.ts" file. Make sure you are using the "defineConfig" method'
         )
       }
 
-      return new DriveManager(config)
+      /**
+       * Keep a reference of services to be served locally
+       */
+      this.#locallyServedServices = config.locallyServed
+      return new DriveManager(config.config)
     })
 
     this.app.container.bind(Disk, async (resolver) => {
       const driveManager = await resolver.make('drive.manager')
       return driveManager.use()
+    })
+  }
+
+  /**
+   * The boot method early resolves drive and router to register
+   * the routes for the locally served services.
+   *
+   * The routes must be defined before the application has
+   * started.
+   */
+  async boot() {
+    const drive = await this.app.container.make('drive.manager')
+    const router = await this.app.container.make('router')
+
+    this.#locallyServedServices.forEach((service) => {
+      router
+        .get(service.routePattern, createFileServer(drive.use(service.service)))
+        .as(service.routeName)
     })
   }
 }
