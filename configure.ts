@@ -131,12 +131,17 @@ export async function configure(command: ConfigureCommand) {
    * Define env variables for the selected services
    */
   await codemods.defineEnvVariables(
-    services.reduce<Record<string, string>>((result, service) => {
-      STORAGE_SERVICES[service].env.forEach((envVariable) => {
-        result[envVariable.name] = envVariable.value
-      })
-      return result
-    }, {})
+    services.reduce<Record<string, string>>(
+      (result, service) => {
+        STORAGE_SERVICES[service].env.forEach((envVariable) => {
+          result[envVariable.name] = envVariable.value
+        })
+        return result
+      },
+      {
+        DRIVE_DISK: services[0],
+      }
+    )
   )
 
   /**
@@ -144,11 +149,16 @@ export async function configure(command: ConfigureCommand) {
    */
   await codemods.defineEnvValidations({
     leadingComment: 'Variables for configuring the drive package',
-    variables: services.reduce<Record<string, string>>((result, service) => {
-      STORAGE_SERVICES[service].env.forEach((envVariable) => {
-        result[envVariable.name] = envVariable.schema
-      })
-      return result
-    }, {}),
+    variables: services.reduce<Record<string, string>>(
+      (result, service) => {
+        STORAGE_SERVICES[service].env.forEach((envVariable) => {
+          result[envVariable.name] = envVariable.schema
+        })
+        return result
+      },
+      {
+        DRIVE_DISK: `Env.schema.enum(['${services.join("', '")}'])`,
+      }
+    ),
   })
 }
