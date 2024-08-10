@@ -1,0 +1,62 @@
+{{{
+  exports({ to: app.configPath('drive.ts') })
+}}}
+import env from '#start/env'{{#if services.includes('fs')}}
+import app from '@adonisjs/core/services/app'{{/if}}
+import { defineConfig, services } from '@adonisjs/drive'
+
+const driveConfig = defineConfig({
+  default: '{{services[0]}}',
+
+  /**
+   * The services object can be used to configure multiple file system
+   * services each using the same or a different driver.
+   */
+  services: { {{#if services.includes('fs')}}
+    fs: services.fs({
+      location: app.makePath('storage'),
+      visibility: 'public',
+      serveFiles: true,
+      routeBasePath: '/uploads',
+    }),{{/if}}{{#if services.includes('s3')}}
+    s3: services.s3({
+      credentials: {
+        accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY'),
+      },
+      region: env.get('AWS_REGION'),
+      bucket: env.get('S3_BUCKET'),
+      visibility: 'public',
+    }),{{/if}}{{#if services.includes('r2')}}
+    r2: services.s3({
+      credentials: {
+        accessKeyId: env.get('R2_ACCESS_KEY_ID'),
+        secretAccessKey: env.get('R2_SECRET_ACCESS_KEY'),
+      },
+      region: 'auto',
+      bucket: env.get('R2_BUCKET'),
+      visibility: 'public',
+    }),{{/if}}{{#if services.includes('do')}}
+    do: services.s3({
+      credentials: {
+        accessKeyId: env.get('DO_ACCESS_KEY_ID'),
+        secretAccessKey: env.get('DO_SECRET_ACCESS_KEY'),
+      },
+      region: env.get('DO_REGION'),
+      endpoint: env.get('DO_ENDPOINT'),
+      bucket: env.get('DO_BUCKET'),
+      visibility: 'public',
+    }),{{/if}}{{#if services.includes('gcs')}}
+    gcs: services.gcs({
+      credentials: env.get('GCS_KEY'),
+      bucket: env.get('GCS_BUCKET'),
+      visibility: 'public',
+    }),{{/if}}
+  },
+})
+
+export default driveConfig
+
+declare module '@adonisjs/drive/types' {
+  export interface DriveDisks extends InferDriveDisks<typeof driveConfig> {}
+}

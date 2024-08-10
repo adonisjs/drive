@@ -13,7 +13,7 @@ import { RuntimeException } from '@adonisjs/core/exceptions'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 import { createFileServer } from '../src/file_server.js'
-import type { DriveService, ServiceWithLocalServer } from '../src/types.js'
+import type { DriveService, ServiceWithLocalServer, SignedURLOptions } from '../src/types.js'
 
 /**
  * Extending the container with a custom service
@@ -37,6 +37,41 @@ export default class DriveProvider {
   #locallyServedServices: ServiceWithLocalServer[] = []
 
   constructor(protected app: ApplicationService) {}
+
+  /**
+   * Defines the template engine on the message class to
+   * render templates
+   */
+  protected async registerViewHelpers(drive: DriveManager<any>) {
+    if (this.app.usingEdgeJS) {
+      const edge = await import('edge.js')
+      edge.default.global('driveUrl', function (key: string, diskName?: string) {
+        const disk = diskName ? drive.use(diskName) : drive.use()
+        return disk.getUrl(key)
+      })
+
+      edge.default.global(
+        'driveSignedUrl',
+        function (
+          key: string,
+          diskNameOrOptions?: string | SignedURLOptions,
+          signedUrlOptions?: SignedURLOptions
+        ) {
+          let diskName: string | undefined
+          let options: SignedURLOptions | undefined = signedUrlOptions
+
+          if (typeof diskNameOrOptions === 'string') {
+            diskName = diskNameOrOptions
+          } else if (diskNameOrOptions && !signedUrlOptions) {
+            options = diskNameOrOptions
+          }
+
+          const disk = diskName ? drive.use(diskName) : drive.use()
+          return disk.getSignedUrl(key, options)
+        }
+      )
+    }
+  }
 
   register() {
     this.app.container.singleton('drive.manager', async () => {
@@ -89,5 +124,7 @@ export default class DriveProvider {
         .get(service.routePattern, createFileServer(drive.use(service.service)))
         .as(service.routeName)
     })
+
+    await this.registerViewHelpers(drive)
   }
 }

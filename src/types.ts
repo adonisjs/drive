@@ -70,23 +70,6 @@ export type AdonisFSDriverOptions = {
 )
 
 /**
- * A list of disks inferred using the config defined inside
- * the user-land application
- */
-export interface DriveDisks {}
-export type InferDriveDisk<T extends ConfigProvider<Record<string, () => DriverContract>>> =
-  Awaited<ReturnType<T['resolver']>>
-
-/**
- * Drive service represents a singleton since of the DriveManager
- * configured using the "config/drive.ts" file.
- */
-export interface DriveService
-  extends DriveManager<
-    DriveDisks extends Record<string, () => DriverContract> ? DriveDisks : never
-  > {}
-
-/**
  * Service info that must be served via the AdonisJS
  * local HTTP server
  */
@@ -114,3 +97,19 @@ export type ServiceConfigProvider<Factory extends DriverFactory> = {
     locallyServed: ServiceWithLocalServer[]
   ) => Promise<Factory>
 }
+
+/**
+ * A list of disks inferred using the config defined inside
+ * the user-land application
+ */
+export interface DriveDisks {}
+export type InferDriveDisks<
+  T extends ConfigProvider<{ config: { services: Record<string, DriverFactory> } }>,
+> = Awaited<ReturnType<T['resolver']>>['config']['services']
+
+/**
+ * Drive service represents a singleton since of the DriveManager
+ * configured using the "config/drive.ts" file.
+ */
+export interface DriveService
+  extends DriveManager<DriveDisks extends Record<string, DriverFactory> ? DriveDisks : never> {}
