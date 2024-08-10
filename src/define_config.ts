@@ -25,6 +25,7 @@ import type {
   ServiceConfigProvider,
   ServiceWithLocalServer,
 } from './types.js'
+import debug from './debug.js'
 
 /**
  * Helper to remap known drive services to factory functions
@@ -115,6 +116,8 @@ export const services: {
     return {
       type: 'provider',
       async resolver(name, app, locallyServed) {
+        debug('configuring fs service')
+
         /**
          * Ensure route base path is provided when serving files
          */
@@ -152,6 +155,7 @@ export const services: {
     return {
       type: 'provider',
       async resolver() {
+        debug('configuring s3 service')
         const { S3Driver } = await import('flydrive/drivers/s3')
         return () => new S3Driver(config)
       },
@@ -161,6 +165,7 @@ export const services: {
     return {
       type: 'provider',
       async resolver() {
+        debug('configuring gcs service')
         const { GCSDriver } = await import('flydrive/drivers/gcs')
         return () => new GCSDriver(config)
       },

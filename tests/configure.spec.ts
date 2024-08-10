@@ -218,7 +218,7 @@ test.group('Configure', (group) => {
     ])
   })
 
-  test('print error when trying to configure an unknown service', async ({ fs, assert }) => {
+  test('print error when trying to configure an unknown service', async ({ fs }) => {
     const ignitor = new IgnitorFactory()
       .withCoreProviders()
       .withCoreConfig()

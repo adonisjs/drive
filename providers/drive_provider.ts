@@ -14,6 +14,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 
 import { createFileServer } from '../src/file_server.js'
 import type { DriveService, ServiceWithLocalServer, SignedURLOptions } from '../src/types.js'
+import debug from '../src/debug.js'
 
 /**
  * Extending the container with a custom service
@@ -45,6 +46,8 @@ export default class DriveProvider {
   protected async registerViewHelpers(drive: DriveManager<any>) {
     if (this.app.usingEdgeJS) {
       const edge = await import('edge.js')
+      debug('detected edge installation. Registering drive global helpers')
+
       edge.default.global('driveUrl', function (key: string, diskName?: string) {
         const disk = diskName ? drive.use(diskName) : drive.use()
         return disk.getUrl(key)
@@ -109,7 +112,7 @@ export default class DriveProvider {
   }
 
   /**
-   * The boot method early resolves drive and router to register
+   * The boot method resolves drive and router to register
    * the routes for the locally served services.
    *
    * The routes must be defined before the application has
@@ -120,6 +123,11 @@ export default class DriveProvider {
     const router = await this.app.container.make('router')
 
     this.#locallyServedServices.forEach((service) => {
+      debug(
+        'configuring drive local file server for "%s", route "%s"',
+        service.service,
+        service.routePattern
+      )
       router
         .get(service.routePattern, createFileServer(drive.use(service.service)))
         .as(service.routeName)
