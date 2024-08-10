@@ -15,9 +15,9 @@ const driveConfig = defineConfig({
   services: { {{#if services.includes('fs')}}
     fs: services.fs({
       location: app.makePath('storage'),
-      visibility: 'public',
       serveFiles: true,
       routeBasePath: '/uploads',
+      visibility: 'public',
     }),{{/if}}{{#if services.includes('s3')}}
     s3: services.s3({
       credentials: {
@@ -35,6 +35,7 @@ const driveConfig = defineConfig({
       },
       region: 'auto',
       bucket: env.get('R2_BUCKET'),
+      endpoint: env.get('R2_ENDPOINT'),
       visibility: 'public',
     }),{{/if}}{{#if services.includes('do')}}
     do: services.s3({
@@ -43,8 +44,8 @@ const driveConfig = defineConfig({
         secretAccessKey: env.get('DO_SECRET_ACCESS_KEY'),
       },
       region: env.get('DO_REGION'),
-      endpoint: env.get('DO_ENDPOINT'),
       bucket: env.get('DO_BUCKET'),
+      endpoint: env.get('DO_ENDPOINT'),
       visibility: 'public',
     }),{{/if}}{{#if services.includes('gcs')}}
     gcs: services.gcs({

@@ -36,8 +36,8 @@ const STORAGE_SERVICES = {
       { name: 'DO_REGION', value: '', schema: 'Env.schema.string()' },
       { name: 'DO_BUCKET', value: '', schema: 'Env.schema.string()' },
       {
-        name: 'DO_REGION',
-        value: `https://\${DO_BUCKET}.digitaloceanspaces.com`,
+        name: 'DO_ENDPOINT',
+        value: `https://\${DO_REGION}.digitaloceanspaces.com`,
         schema: 'Env.schema.string()',
       },
     ],
@@ -48,6 +48,7 @@ const STORAGE_SERVICES = {
       { name: 'R2_ACCESS_KEY_ID', value: '', schema: 'Env.schema.string()' },
       { name: 'R2_SECRET_ACCESS_KEY', value: '', schema: 'Env.schema.string()' },
       { name: 'R2_BUCKET', value: '', schema: 'Env.schema.string()' },
+      { name: 'R2_ENDPOINT', value: '', schema: 'Env.schema.string()' },
     ],
   },
   gcs: {
