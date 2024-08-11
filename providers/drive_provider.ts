@@ -195,5 +195,6 @@ export default class DriveProvider {
     })
 
     await this.registerViewHelpers(drive)
+    await this.extendMultipartFile(drive)
   }
 }

@@ -121,6 +121,25 @@ export async function configure(command: ConfigureCommand) {
     return
   }
 
+  /**
+   * Create a flat collection of dependencies to install
+   * based upon the configured services.
+   */
+  const pkgsToInstall = services
+    .flatMap((service) => STORAGE_SERVICES[service].dependencies)
+    .map((pkg) => {
+      return { name: pkg, isDevDependency: false }
+    })
+
+  /**
+   * Prompt to install additional services
+   */
+  if (!shouldInstallPackages && pkgsToInstall.length) {
+    shouldInstallPackages = await command.prompt.confirm(
+      'Do you want to install additional packages required by "@adonisjs/drive"?'
+    )
+  }
+
   const codemods = await command.createCodemods()
 
   /**
@@ -172,26 +191,8 @@ export async function configure(command: ConfigureCommand) {
     ),
   })
 
-  /**
-   * Create a flat collection of dependencies to install
-   * based upon the configured services.
-   */
-  const pkgsToInstall = services
-    .flatMap((service) => STORAGE_SERVICES[service].dependencies)
-    .map((pkg) => {
-      return { name: pkg, isDevDependency: false }
-    })
   if (!pkgsToInstall.length) {
     return
-  }
-
-  /**
-   * Prompt to install additional services
-   */
-  if (!shouldInstallPackages) {
-    shouldInstallPackages = await command.prompt.confirm(
-      'Do you want to install additional packages required by "@adonisjs/drive"?'
-    )
   }
 
   if (shouldInstallPackages) {
