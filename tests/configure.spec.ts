@@ -213,7 +213,7 @@ test.group('Configure', (group) => {
     await assert.fileContains('config/drive.ts', `declare module '@adonisjs/drive/types' {`)
 
     await assert.fileContains('.env', 'DRIVE_DISK=fs')
-    await assert.fileContains('start/env.ts', `DRIVE_DISK: Env.schema.enum(['fs'])`)
+    await assert.fileContains('start/env.ts', `DRIVE_DISK: Env.schema.enum(['fs'] as const)`)
 
     await assert.fileContains('config/drive.ts', [
       `fs: services.fs({

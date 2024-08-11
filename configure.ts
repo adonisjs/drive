@@ -167,7 +167,7 @@ export async function configure(command: ConfigureCommand) {
         return result
       },
       {
-        DRIVE_DISK: `Env.schema.enum(['${services.join("', '")}' as const])`,
+        DRIVE_DISK: `Env.schema.enum(['${services.join("', '")}'] as const)`,
       }
     ),
   })
