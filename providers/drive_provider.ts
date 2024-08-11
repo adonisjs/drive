@@ -9,12 +9,19 @@
 
 import { Disk, DriveManager } from 'flydrive'
 import { configProvider } from '@adonisjs/core'
+import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { createFileServer } from '../src/file_server.js'
-import type { DriveService, ServiceWithLocalServer, SignedURLOptions } from '../src/types.js'
 import debug from '../src/debug.js'
+import { createFileServer } from '../src/file_server.js'
+import type {
+  DriveDisks,
+  DriveService,
+  WriteOptions,
+  SignedURLOptions,
+  ServiceWithLocalServer,
+} from '../src/types.js'
 
 /**
  * Extending the container with a custom service
@@ -22,6 +29,22 @@ import debug from '../src/debug.js'
 declare module '@adonisjs/core/types' {
   interface ContainerBindings {
     'drive.manager': DriveService
+  }
+}
+
+/**
+ * Extending BodyParser Multipart file with "moveToDisk"
+ * method to move file from the local filesystem to
+ * a drive disk
+ */
+declare module '@adonisjs/core/bodyparser' {
+  interface MultipartFile {
+    /**
+     * Move user uploaded file from the tmp directory
+     * to a Drive disk
+     */
+    moveToDisk(key: string, disk?: keyof DriveDisks, options?: WriteOptions): Promise<void>
+    moveToDisk(key: string, options?: WriteOptions): Promise<void>
   }
 }
 
@@ -74,6 +97,44 @@ export default class DriveProvider {
         }
       )
     }
+  }
+
+  /**
+   * Extending BodyParser Multipart file with "moveToDisk"
+   * method to move file from the local filesystem to
+   * a drive disk
+   */
+  protected async extendMultipartFile(drive: DriveManager<any>) {
+    debug('Adding "MultipartFile.moveToDisk" method')
+
+    MultipartFile.macro(
+      'moveToDisk',
+      async function (this: MultipartFile, key, diskNameOrOptions?, writeOptions?) {
+        if (!this.tmpPath) {
+          throw new RuntimeException(
+            'property "tmpPath" must be set on the file before moving it',
+            {
+              status: 500,
+              code: 'E_MISSING_FILE_TMP_PATH',
+            }
+          )
+        }
+
+        let diskName: string | undefined
+        let options: WriteOptions | undefined
+
+        if (typeof diskNameOrOptions === 'string') {
+          diskName = diskNameOrOptions
+        } else if (diskNameOrOptions && !writeOptions) {
+          options = diskNameOrOptions
+        } else if (writeOptions) {
+          options = writeOptions
+        }
+
+        const disk = diskName ? drive.use(diskName) : drive.use()
+        return disk.moveFromFs(this.tmpPath, key, options)
+      }
+    )
   }
 
   register() {
