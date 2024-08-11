@@ -30,16 +30,16 @@ const STORAGE_SERVICES = {
     ],
     dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
-  do: {
+  spaces: {
     name: 'Digital Ocean Spaces',
     env: [
-      { name: 'DO_ACCESS_KEY_ID', value: '', schema: 'Env.schema.string()' },
-      { name: 'DO_SECRET_ACCESS_KEY', value: '', schema: 'Env.schema.string()' },
-      { name: 'DO_REGION', value: '', schema: 'Env.schema.string()' },
-      { name: 'DO_BUCKET', value: '', schema: 'Env.schema.string()' },
+      { name: 'SPACES_KEY', value: '', schema: 'Env.schema.string()' },
+      { name: 'SPACES_SECRET', value: '', schema: 'Env.schema.string()' },
+      { name: 'SPACES_REGION', value: '', schema: 'Env.schema.string()' },
+      { name: 'SPACES_BUCKET', value: '', schema: 'Env.schema.string()' },
       {
-        name: 'DO_ENDPOINT',
-        value: `https://\${DO_REGION}.digitaloceanspaces.com`,
+        name: 'SPACES_ENDPOINT',
+        value: `https://\${SPACES_REGION}.digitaloceanspaces.com`,
         schema: 'Env.schema.string()',
       },
     ],
@@ -48,8 +48,8 @@ const STORAGE_SERVICES = {
   r2: {
     name: 'Cloudflare R2',
     env: [
-      { name: 'R2_ACCESS_KEY_ID', value: '', schema: 'Env.schema.string()' },
-      { name: 'R2_SECRET_ACCESS_KEY', value: '', schema: 'Env.schema.string()' },
+      { name: 'R2_KEY', value: '', schema: 'Env.schema.string()' },
+      { name: 'R2_SECRET', value: '', schema: 'Env.schema.string()' },
       { name: 'R2_BUCKET', value: '', schema: 'Env.schema.string()' },
       { name: 'R2_ENDPOINT', value: '', schema: 'Env.schema.string()' },
     ],

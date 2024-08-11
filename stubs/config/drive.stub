@@ -30,22 +30,22 @@ const driveConfig = defineConfig({
     }),{{/if}}{{#if services.includes('r2')}}
     r2: services.s3({
       credentials: {
-        accessKeyId: env.get('R2_ACCESS_KEY_ID'),
-        secretAccessKey: env.get('R2_SECRET_ACCESS_KEY'),
+        accessKeyId: env.get('R2_KEY'),
+        secretAccessKey: env.get('R2_SECRET'),
       },
       region: 'auto',
       bucket: env.get('R2_BUCKET'),
       endpoint: env.get('R2_ENDPOINT'),
       visibility: 'public',
-    }),{{/if}}{{#if services.includes('do')}}
-    do: services.s3({
+    }),{{/if}}{{#if services.includes('spaces')}}
+    spaces: services.s3({
       credentials: {
-        accessKeyId: env.get('DO_ACCESS_KEY_ID'),
-        secretAccessKey: env.get('DO_SECRET_ACCESS_KEY'),
+        accessKeyId: env.get('SPACES_KEY'),
+        secretAccessKey: env.get('SPACES_SECRET'),
       },
-      region: env.get('DO_REGION'),
-      bucket: env.get('DO_BUCKET'),
-      endpoint: env.get('DO_ENDPOINT'),
+      region: env.get('SPACES_REGION'),
+      bucket: env.get('SPACES_BUCKET'),
+      endpoint: env.get('SPACES_ENDPOINT'),
       visibility: 'public',
     }),{{/if}}{{#if services.includes('gcs')}}
     gcs: services.gcs({
