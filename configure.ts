@@ -18,6 +18,7 @@ const STORAGE_SERVICES = {
   fs: {
     name: 'Local filesystem',
     env: [],
+    dependencies: [],
   },
   s3: {
     name: 'AWS S3',
@@ -27,6 +28,7 @@ const STORAGE_SERVICES = {
       { name: 'AWS_REGION', value: '', schema: 'Env.schema.string()' },
       { name: 'S3_BUCKET', value: '', schema: 'Env.schema.string()' },
     ],
+    dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
   do: {
     name: 'Digital Ocean Spaces',
@@ -41,6 +43,7 @@ const STORAGE_SERVICES = {
         schema: 'Env.schema.string()',
       },
     ],
+    dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
   r2: {
     name: 'Cloudflare R2',
@@ -50,6 +53,7 @@ const STORAGE_SERVICES = {
       { name: 'R2_BUCKET', value: '', schema: 'Env.schema.string()' },
       { name: 'R2_ENDPOINT', value: '', schema: 'Env.schema.string()' },
     ],
+    dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
   gcs: {
     name: 'Google Cloud Storage',
@@ -57,6 +61,7 @@ const STORAGE_SERVICES = {
       { name: 'GCS_KEY', value: 'file://./gcs_key.json', schema: 'Env.schema.string()' },
       { name: 'GCS_BUCKET', value: '', schema: 'Env.schema.string()' },
     ],
+    dependencies: ['@google-cloud/storage'],
   },
 }
 
@@ -73,6 +78,11 @@ export async function configure(command: ConfigureCommand) {
     | keyof typeof STORAGE_SERVICES
     | (keyof typeof STORAGE_SERVICES)[]
     | undefined = command.parsedFlags.services
+
+  /**
+   * Should dependencies be installed
+   */
+  let shouldInstallPackages: boolean | undefined = command.parsedFlags.install
 
   /**
    * Display prompt when no services are specified
@@ -161,4 +171,32 @@ export async function configure(command: ConfigureCommand) {
       }
     ),
   })
+
+  /**
+   * Create a flat collection of dependencies to install
+   * based upon the configured services.
+   */
+  const pkgsToInstall = services
+    .flatMap((service) => STORAGE_SERVICES[service].dependencies)
+    .map((pkg) => {
+      return { name: pkg, isDevDependency: false }
+    })
+  if (!pkgsToInstall.length) {
+    return
+  }
+
+  /**
+   * Prompt to install additional services
+   */
+  if (!shouldInstallPackages) {
+    shouldInstallPackages = await command.prompt.confirm(
+      'Do you want to install additional packages required by "@adonisjs/drive"?'
+    )
+  }
+
+  if (shouldInstallPackages) {
+    await codemods.installPackages(pkgsToInstall)
+  } else {
+    await codemods.listPackagesToInstall(pkgsToInstall)
+  }
 }

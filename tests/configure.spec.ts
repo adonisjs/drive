@@ -41,6 +41,7 @@ test.group('Configure', (group) => {
 
     await fs.create('.env', '')
     await fs.createJson('tsconfig.json', {})
+    await fs.createJson('package.json', {})
     await fs.create('start/env.ts', `export default Env.create(new URL('./'), {})`)
     await fs.create('adonisrc.ts', `export default defineConfig({})`)
 
@@ -49,6 +50,7 @@ test.group('Configure', (group) => {
       '../../index.js',
       '--services=fs',
       '--services=s3',
+      '--install',
     ])
     await command.exec()
 
@@ -79,9 +81,9 @@ test.group('Configure', (group) => {
       `
     fs: services.fs({
       location: app.makePath('storage'),
-      visibility: 'public',
       serveFiles: true,
       routeBasePath: '/uploads',
+      visibility: 'public',
     }),`
     )
     await assert.fileContains(
@@ -123,6 +125,11 @@ test.group('Configure', (group) => {
 
     const ace = await app.container.make('ace')
     const command = await ace.create(Configure, ['../../index.js'])
+
+    command.prompt
+      .trap('Do you want to install additional packages required by "@adonisjs/drive"?')
+      .reject()
+
     command.prompt
       .trap('Select the storage services you want to use')
       .assertFails('', 'Please select one or more services')
@@ -193,6 +200,7 @@ test.group('Configure', (group) => {
     const ace = await app.container.make('ace')
     const command = await ace.create(Configure, ['../../index.js'])
     command.prompt.trap('Select the storage services you want to use').chooseOption(0)
+
     await command.exec()
 
     await assert.fileExists('.env')
@@ -204,15 +212,15 @@ test.group('Configure', (group) => {
     await assert.fileContains('config/drive.ts', 'defineConfig')
     await assert.fileContains('config/drive.ts', `declare module '@adonisjs/drive/types' {`)
 
-    await assert.fileEquals('.env', '')
-    await assert.fileEquals('start/env.ts', `export default Env.create(new URL('./'), {})\n`)
+    await assert.fileContains('.env', 'DRIVE_DISK=fs')
+    await assert.fileContains('start/env.ts', `DRIVE_DISK: Env.schema.enum(['fs'])`)
 
     await assert.fileContains('config/drive.ts', [
       `fs: services.fs({
       location: app.makePath('storage'),
-      visibility: 'public',
       serveFiles: true,
       routeBasePath: '/uploads',
+      visibility: 'public',
     }),`,
       `import app from '@adonisjs/core/services/app'`,
     ])
