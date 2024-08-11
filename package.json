@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=20.6.0"
   },
+  "main": "./build/index.js",
   "type": "module",
   "files": [
     "build",
@@ -87,8 +88,16 @@
       "optional": true
     }
   },
-  "author": "vir,adonisjs",
+  "author": "virk,adonisjs",
   "license": "MIT",
+  "homepage": "https://github.com/adonisjs/drive#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adonisjs/drive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adonisjs/drive/issues"
+  },
   "keywords": [
     "drive",
     "flydrive",
