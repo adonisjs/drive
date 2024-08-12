@@ -24,6 +24,7 @@ import type {
   AdonisFSDriverOptions,
   ServiceConfigProvider,
   ServiceWithLocalServer,
+  DriveManagerOptions,
 } from './types.js'
 import debug from './debug.js'
 
@@ -33,6 +34,7 @@ import debug from './debug.js'
 type ResolvedConfig<Services extends Record<string, DriverFactory>> = {
   config: {
     default: keyof Services
+    fakes: DriveManagerOptions<Services>['fakes']
     services: {
       [K in keyof Services]: Services[K] extends ServiceConfigProvider<infer A> ? A : Services[K]
     }
@@ -45,12 +47,13 @@ type ResolvedConfig<Services extends Record<string, DriverFactory>> = {
  */
 export function defineConfig<Services extends Record<string, DriverFactory>>(config: {
   default: keyof Services
+  fakes?: DriveManagerOptions<Services>['fakes']
   services: {
     [K in keyof Services]: ServiceConfigProvider<Services[K]> | Services[K]
   }
 }): ConfigProvider<ResolvedConfig<Services>> {
   return configProvider.create(async (app) => {
-    const { services, default: defaultDisk } = config
+    const { services, fakes, default: defaultDisk } = config
     const servicesNames = Object.keys(services)
 
     /**
@@ -80,6 +83,18 @@ export function defineConfig<Services extends Record<string, DriverFactory>>(con
     return {
       config: {
         default: defaultDisk,
+        fakes: {
+          location: app.tmpPath('drive-fakes'),
+          urlBuilder: {
+            async generateURL(key, _) {
+              return `/drive/fakes/${key}`
+            },
+            async generateSignedURL(key, _, __) {
+              return `/drive/fakes/signed/${key}`
+            },
+          },
+          ...fakes,
+        },
         services: disks,
       },
       locallyServed,

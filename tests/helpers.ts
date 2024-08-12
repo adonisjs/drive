@@ -34,9 +34,9 @@ export function createRouter() {
   return router
 }
 
-export function createAppWithRouter() {
+export async function createAppWithRouter() {
   const application = new AppFactory().create(BASE_URL) as unknown as ApplicationService
-  application.init()
+  await application.init()
 
   application.container.bind('router', () => createRouter())
   return application

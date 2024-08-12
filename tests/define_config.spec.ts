@@ -28,13 +28,15 @@ test.group('Define config', () => {
       },
     })
 
-    const app = createAppWithRouter()
+    const app = await createAppWithRouter()
     const config = await configProvider.resolve<any>(app, provider)
     assert.deepEqual(config.locallyServed, [])
     assert.containsSubset(config.config, {
       default: 'fs',
       services: {},
     })
+    assert.exists(config.config.fakes)
+    assert.equal(config.config.fakes.location, app.tmpPath('drive-fakes'))
     assert.isFunction(config.config.services.fs)
     assert.instanceOf(config.config.services.fs(), FSDriver)
   })
@@ -52,7 +54,7 @@ test.group('Define config', () => {
       },
     })
 
-    const app = createAppWithRouter()
+    const app = await createAppWithRouter()
     await assert.rejects(
       () => configProvider.resolve<any>(app, provider),
       'Invalid drive config. Missing "routeBasePath" option in "services.fs" object'
@@ -72,7 +74,7 @@ test.group('Define config', () => {
       },
     })
 
-    const app = createAppWithRouter()
+    const app = await createAppWithRouter()
     const config = await configProvider.resolve<any>(app, provider)
     assert.deepEqual(config.locallyServed, [
       {
@@ -100,7 +102,7 @@ test.group('Define config', () => {
       },
     })
 
-    const app = createAppWithRouter()
+    const app = await createAppWithRouter()
     const config = await configProvider.resolve<any>(app, provider)
     assert.containsSubset(config.config, {
       default: 's3',
@@ -121,7 +123,7 @@ test.group('Define config', () => {
       },
     })
 
-    const app = createAppWithRouter()
+    const app = await createAppWithRouter()
     const config = await configProvider.resolve<any>(app, provider)
     assert.containsSubset(config.config, {
       default: 'gcs',
