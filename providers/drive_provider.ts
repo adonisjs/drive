@@ -125,6 +125,7 @@ export default class DriveProvider {
 
         if (typeof diskNameOrOptions === 'string') {
           diskName = diskNameOrOptions
+          options = writeOptions ?? undefined
         } else if (diskNameOrOptions && !writeOptions) {
           options = diskNameOrOptions
         } else if (writeOptions) {
