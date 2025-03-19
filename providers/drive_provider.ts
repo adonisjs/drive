@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { createReadStream } from 'node:fs'
 import { Disk, DriveManager } from 'flydrive'
 import { configProvider } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
@@ -43,8 +44,19 @@ declare module '@adonisjs/core/bodyparser' {
      * Move user uploaded file from the tmp directory
      * to a Drive disk
      */
-    moveToDisk(key: string, disk?: keyof DriveDisks, options?: WriteOptions): Promise<void>
-    moveToDisk(key: string, options?: WriteOptions): Promise<void>
+    moveToDisk(
+      key: string,
+      disk?: keyof DriveDisks,
+      options?: WriteOptions & {
+        action?: 'move' | 'stream'
+      }
+    ): Promise<void>
+    moveToDisk(
+      key: string,
+      options?: WriteOptions & {
+        action?: 'move' | 'stream'
+      }
+    ): Promise<void>
   }
 }
 
@@ -121,19 +133,44 @@ export default class DriveProvider {
         }
 
         let diskName: string | undefined
-        let options: WriteOptions | undefined
+        let options: WriteOptions & { action?: 'move' | 'stream' } = {}
 
         if (typeof diskNameOrOptions === 'string') {
           diskName = diskNameOrOptions
-          options = writeOptions ?? undefined
+          options = writeOptions ?? {}
         } else if (diskNameOrOptions && !writeOptions) {
           options = diskNameOrOptions
         } else if (writeOptions) {
           options = writeOptions
         }
 
+        /**
+         * In case of "move", we will move the file from the tmp
+         * directory to the remote server.
+         *
+         * Whereas, in case of "stream", we will stream the file as a
+         * put operation. The "stream" method can be more accurate
+         * in retaining metadata of a file with certain file
+         * providers.
+         */
+        const action = options.action ?? 'move'
+
+        /**
+         * Set content-type when missing in the user-provided
+         * options.
+         */
+        if (this.type && this.subtype && !options.contentType) {
+          options.contentType = `${this.type}/${this.subtype}`
+        }
+
         const disk = diskName ? drive.use(diskName) : drive.use()
-        await disk.moveFromFs(this.tmpPath, key, options)
+
+        if (action === 'move') {
+          await disk.moveFromFs(this.tmpPath, key, options)
+        } else {
+          await disk.putStream(key, createReadStream(this.tmpPath!), options)
+        }
+
         this.markAsMoved(key, await disk.getUrl(key))
       }
     )
