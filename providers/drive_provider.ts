@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { createReadStream } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { Disk, DriveManager } from 'flydrive'
 import { configProvider } from '@adonisjs/core'
@@ -49,13 +48,29 @@ declare module '@adonisjs/core/bodyparser' {
       key: string,
       disk?: keyof DriveDisks,
       options?: WriteOptions & {
-        action?: 'move' | 'stream' | 'readThenWrite'
+        /**
+         * When using "stream", the file from the tmpPath will be read
+         * as a stream and written to the cloud provider.
+         *
+         * Whereas, in case of "buffer", the entire file will be first
+         * read into the memory and then sent to the cloud provider. Some
+         * cloud providers like supabase cannot work with the "stream" option.
+         */
+        moveAs?: 'stream' | 'buffer'
       }
     ): Promise<void>
     moveToDisk(
       key: string,
       options?: WriteOptions & {
-        action?: 'move' | 'stream' | 'readThenWrite'
+        /**
+         * When using "stream", the file from the tmpPath will be read
+         * as a stream and written to the cloud provider.
+         *
+         * Whereas, in case of "buffer", the entire file will be first
+         * read into the memory and then sent to the cloud provider. Some
+         * cloud providers like supabase cannot work with the "stream" option.
+         */
+        moveAs?: 'stream' | 'buffer'
       }
     ): Promise<void>
   }
@@ -134,7 +149,7 @@ export default class DriveProvider {
         }
 
         let diskName: string | undefined
-        let options: WriteOptions & { action?: 'move' | 'stream' | 'readThenWrite' } = {}
+        let options: WriteOptions & { moveAs?: 'stream' | 'buffer' } = {}
 
         if (typeof diskNameOrOptions === 'string') {
           diskName = diskNameOrOptions
@@ -145,22 +160,11 @@ export default class DriveProvider {
           options = writeOptions
         }
 
-        /**
-         * In case of "move", we will move the file from the tmp
-         * directory to the remote server.
-         *
-         * Whereas, in case of "stream", we will stream the file as a
-         * put operation. The "stream" method can be more accurate
-         * in retaining metadata of a file with certain file
-         * providers.
-         */
-        const action = options.action ?? 'move'
+        const moveAs = options.moveAs ?? 'stream'
         const disk = diskName ? drive.use(diskName) : drive.use()
 
-        if (action === 'move') {
+        if (moveAs === 'stream') {
           await disk.moveFromFs(this.tmpPath, key, options)
-        } else if (action === 'stream') {
-          await disk.putStream(key, createReadStream(this.tmpPath!), options)
         } else {
           await disk.put(key, await readFile(this.tmpPath!), options)
         }
