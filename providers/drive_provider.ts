@@ -133,7 +133,8 @@ export default class DriveProvider {
         }
 
         const disk = diskName ? drive.use(diskName) : drive.use()
-        return disk.moveFromFs(this.tmpPath, key, options)
+        await disk.moveFromFs(this.tmpPath, key, options)
+        this.markAsMoved(key, await disk.getUrl(key))
       }
     )
   }
