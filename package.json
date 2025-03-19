@@ -25,51 +25,52 @@
     "./drivers/gcs/types": "./build/drivers/gcs/types.js"
   },
   "scripts": {
-    "clean": "del-cli build",
-    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext=.ts",
-    "format": "prettier --write .",
-    "quick:test": "node --import=./tsnode.esm.js --enable-source-maps bin/test.ts",
     "pretest": "npm run lint",
     "test": "c8 npm run quick:test",
-    "prebuild": "npm run lint && npm run clean",
-    "build": "tsup-node --metafile && tsc --emitDeclarationOnly --declaration",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "precompile": "npm run lint",
+    "clean": "del-cli build",
+    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "build": "npm run compile",
     "postbuild": "npm run copy:templates",
-    "release": "np",
     "version": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "release": "release-it",
+    "quick:test": "node --import=ts-node-maintained/register/esm --enable-source-maps bin/test.ts"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^7.7.0",
-    "@adonisjs/core": "^6.12.1",
-    "@adonisjs/eslint-config": "^1.3.0",
-    "@adonisjs/prettier-config": "^1.3.0",
-    "@adonisjs/tsconfig": "^1.3.0",
-    "@aws-sdk/client-s3": "^3.627.0",
-    "@aws-sdk/s3-request-presigner": "^3.627.0",
-    "@google-cloud/storage": "^7.12.1",
-    "@japa/assert": "^3.0.0",
-    "@japa/file-system": "^2.3.0",
-    "@japa/runner": "^3.1.4",
-    "@swc-node/register": "^1.10.9",
-    "@swc/core": "^1.7.10",
-    "@types/node": "^22.2.0",
+    "@adonisjs/assembler": "^7.8.2",
+    "@adonisjs/core": "^6.17.2",
+    "@adonisjs/eslint-config": "^2.0.0",
+    "@adonisjs/prettier-config": "^1.4.4",
+    "@adonisjs/tsconfig": "^1.4.0",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.758.0",
+    "@google-cloud/storage": "^7.15.2",
+    "@japa/assert": "^4.0.1",
+    "@japa/file-system": "^2.3.2",
+    "@japa/runner": "^4.2.0",
+    "@swc-node/register": "^1.10.10",
+    "@swc/core": "^1.11.11",
+    "@types/node": "^22.13.10",
     "@types/supertest": "^6.0.2",
-    "c8": "^10.1.2",
+    "c8": "^10.1.3",
     "copyfiles": "^2.4.1",
-    "del-cli": "^5.1.0",
-    "edge.js": "^6.0.2",
-    "eslint": "^8.57.0",
-    "np": "^10.0.7",
-    "prettier": "^3.3.3",
+    "del-cli": "^6.0.0",
+    "edge.js": "^6.2.1",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
+    "release-it": "^18.1.2",
     "supertest": "^7.0.0",
-    "ts-node": "^10.9.2",
-    "tsup": "^8.2.4",
-    "typescript": "^5.5.4"
+    "ts-node-maintained": "^10.9.5",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "flydrive": "^1.0.3"
+    "flydrive": "^1.1.0"
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.2.0",
@@ -88,8 +89,6 @@
       "optional": true
     }
   },
-  "author": "virk,adonisjs",
-  "license": "MIT",
   "homepage": "https://github.com/adonisjs/drive#readme",
   "repository": {
     "type": "git",
@@ -106,28 +105,11 @@
     "r2",
     "fs"
   ],
-  "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/package"
-  },
-  "prettier": "@adonisjs/prettier-config",
+  "author": "Harminder Virk <virk@adonisjs.com>",
+  "license": "MIT",
   "publishConfig": {
     "access": "public",
-    "tag": "latest"
-  },
-  "np": {
-    "message": "chore(release): %s",
-    "tag": "latest",
-    "branch": "main",
-    "anyBranch": false
-  },
-  "c8": {
-    "reporter": [
-      "text",
-      "html"
-    ],
-    "exclude": [
-      "tests/**"
-    ]
+    "provenance": true
   },
   "tsup": {
     "entry": [
@@ -146,7 +128,41 @@
     "clean": true,
     "format": "esm",
     "dts": false,
-    "sourcemap": true,
+    "sourcemap": false,
     "target": "esnext"
-  }
+  },
+  "release-it": {
+    "git": {
+      "requireCleanWorkingDir": true,
+      "requireUpstream": true,
+      "commitMessage": "chore(release): ${version}",
+      "tagAnnotation": "v${version}",
+      "push": true,
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": true,
+      "skipChecks": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "angular"
+        }
+      }
+    }
+  },
+  "c8": {
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "tests/**"
+    ]
+  },
+  "prettier": "@adonisjs/prettier-config"
 }
