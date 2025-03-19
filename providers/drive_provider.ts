@@ -8,6 +8,7 @@
  */
 
 import { createReadStream } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { Disk, DriveManager } from 'flydrive'
 import { configProvider } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
@@ -48,13 +49,13 @@ declare module '@adonisjs/core/bodyparser' {
       key: string,
       disk?: keyof DriveDisks,
       options?: WriteOptions & {
-        action?: 'move' | 'stream'
+        action?: 'move' | 'stream' | 'readThenWrite'
       }
     ): Promise<void>
     moveToDisk(
       key: string,
       options?: WriteOptions & {
-        action?: 'move' | 'stream'
+        action?: 'move' | 'stream' | 'readThenWrite'
       }
     ): Promise<void>
   }
@@ -133,7 +134,7 @@ export default class DriveProvider {
         }
 
         let diskName: string | undefined
-        let options: WriteOptions & { action?: 'move' | 'stream' } = {}
+        let options: WriteOptions & { action?: 'move' | 'stream' | 'readThenWrite' } = {}
 
         if (typeof diskNameOrOptions === 'string') {
           diskName = diskNameOrOptions
@@ -154,21 +155,14 @@ export default class DriveProvider {
          * providers.
          */
         const action = options.action ?? 'move'
-
-        /**
-         * Set content-type when missing in the user-provided
-         * options.
-         */
-        if (this.type && this.subtype && !options.contentType) {
-          options.contentType = `${this.type}/${this.subtype}`
-        }
-
         const disk = diskName ? drive.use(diskName) : drive.use()
 
         if (action === 'move') {
           await disk.moveFromFs(this.tmpPath, key, options)
-        } else {
+        } else if (action === 'stream') {
           await disk.putStream(key, createReadStream(this.tmpPath!), options)
+        } else {
+          await disk.put(key, await readFile(this.tmpPath!), options)
         }
 
         this.markAsMoved(key, await disk.getUrl(key))
