@@ -165,7 +165,11 @@ export default class DriveProvider {
           await disk.put(key, await readFile(this.tmpPath!), options)
         }
 
-        this.markAsMoved(key, await disk.getUrl(key))
+        try {
+          this.meta.url = await disk.getUrl(key)
+        } catch {}
+
+        this.markAsMoved(key, key)
       }
     )
   }
