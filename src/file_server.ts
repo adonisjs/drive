@@ -10,8 +10,8 @@
 import type { Disk } from 'flydrive'
 import type { HttpContext } from '@adonisjs/core/http'
 
-import debug from './debug.js'
-import { CannotServeFileException } from './errors.js'
+import debug './debug.ts'
+import { CannotServeFileException } './errors.ts'
 
 function decodeLocation(location: string): string {
   try {

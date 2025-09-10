@@ -19,10 +19,10 @@ import {
   HttpContextFactory,
 } from '@adonisjs/core/factories/http'
 
-import { Disk } from '../index.js'
-import { FSDriver } from '../drivers/fs/main.js'
-import type { AdonisFSDriverOptions } from '../src/types.js'
-import type { FSDriverOptions } from '../drivers/fs/types.js'
+import { Disk } '../index.ts'
+import { FSDriver } '../drivers/fs/main.ts'
+import type { AdonisFSDriverOptions } '../src/types.ts'
+import type { FSDriverOptions } '../drivers/fs/types.ts'
 
 export const BASE_URL = new URL('./', import.meta.url)
 const qs = new QsParserFactory().create()

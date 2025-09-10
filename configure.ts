@@ -9,7 +9,7 @@
 
 import string from '@adonisjs/core/helpers/string'
 import type ConfigureCommand from '@adonisjs/core/commands/configure'
-import { stubsRoot } from './stubs/main.js'
+import { stubsRoot } './stubs/main.ts'
 
 /**
  * List of available storage services

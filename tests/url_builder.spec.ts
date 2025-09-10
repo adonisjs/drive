@@ -8,8 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import { createURLBuilder } from '../src/url_builder.js'
-import { createRouter, getFSDriverConfig } from './helpers.js'
+import { createURLBuilder } '../src/url_builder.ts'
+import { createRouter, getFSDriverConfig } './helpers.ts'
 
 test.group('URL Builder', () => {
   test('create file URL using the URL builder', async ({ assert }) => {

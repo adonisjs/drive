@@ -8,7 +8,7 @@
  */
 
 import type { Router } from '@adonisjs/core/http'
-import type { AdonisFSDriverOptions } from './types.js'
+import type { AdonisFSDriverOptions } './types.ts'
 import type { FSDriverOptions } from 'flydrive/drivers/fs/types'
 
 /**

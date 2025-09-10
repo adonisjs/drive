@@ -18,15 +18,15 @@ import type { FSDriverOptions } from 'flydrive/drivers/fs/types'
 import type { S3DriverOptions } from 'flydrive/drivers/s3/types'
 import type { GCSDriverOptions } from 'flydrive/drivers/gcs/types'
 
-import debug from './debug.js'
-import { createURLBuilder } from './url_builder.js'
+import debug './debug.ts'
+import { createURLBuilder } './url_builder.ts'
 import type {
   DriverFactory,
   AdonisFSDriverOptions,
   ServiceConfigProvider,
   ServiceWithLocalServer,
   DriveManagerOptions,
-} from './types.js'
+} './types.ts'
 
 /**
  * Helper to remap known drive services to factory functions

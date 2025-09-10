@@ -10,9 +10,9 @@
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'node:http'
-import { createFileServer } from '../src/file_server.js'
-import { createURLBuilder } from '../src/url_builder.js'
-import { createDisk, createRouteHandler, createRouter, getFSDriverConfig } from './helpers.js'
+import { createFileServer } '../src/file_server.ts'
+import { createURLBuilder } '../src/url_builder.ts'
+import { createDisk, createRouteHandler, createRouter, getFSDriverConfig } './helpers.ts'
 
 test.group('File server | public files', () => {
   test('return 404 when file does not exist', async ({ assert }) => {

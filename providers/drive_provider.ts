@@ -14,15 +14,15 @@ import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import debug from '../src/debug.js'
-import { createFileServer } from '../src/file_server.js'
+import debug '../src/debug.ts'
+import { createFileServer } '../src/file_server.ts'
 import type {
   DriveDisks,
   DriveService,
   WriteOptions,
   SignedURLOptions,
   ServiceWithLocalServer,
-} from '../src/types.js'
+} '../src/types.ts'
 
 /**
  * Extending the container with a custom service

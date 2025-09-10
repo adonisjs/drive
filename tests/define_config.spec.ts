@@ -10,11 +10,11 @@
 import { test } from '@japa/runner'
 import { configProvider } from '@adonisjs/core'
 
-import { FSDriver } from '../drivers/fs/main.js'
-import { S3Driver } from '../drivers/s3/main.js'
-import { GCSDriver } from '../drivers/gcs/main.js'
-import { createAppWithRouter, BASE_URL } from './helpers.js'
-import { defineConfig, services } from '../src/define_config.js'
+import { FSDriver } '../drivers/fs/main.ts'
+import { S3Driver } '../drivers/s3/main.ts'
+import { GCSDriver } '../drivers/gcs/main.ts'
+import { createAppWithRouter, BASE_URL } './helpers.ts'
+import { defineConfig, services } '../src/define_config.ts'
 
 test.group('Define config', () => {
   test('configure fs driver', async ({ assert }) => {

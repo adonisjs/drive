@@ -8,7 +8,7 @@
  */
 
 import app from '@adonisjs/core/services/app'
-import type { DriveService } from '../src/types.js'
+import type { DriveService } '../src/types.ts'
 
 let drive: DriveService
 
