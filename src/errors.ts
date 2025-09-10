@@ -13,10 +13,30 @@ import { Exception } from '@adonisjs/core/exceptions'
 /**
  * The exception is raised by the local file server when
  * trying to serve a file during an HTTP request.
+ *
+ * @example
+ * ```js
+ * try {
+ *   await drive.serve('file.txt')
+ * } catch (error) {
+ *   if (error instanceof CannotServeFileException) {
+ *     console.log('Cannot serve file:', error.message)
+ *   }
+ * }
+ * ```
  */
 export class CannotServeFileException extends Exception {
+  /**
+   * Flag to determine if debug information should be shown.
+   * Set to false in production mode.
+   */
   debug = process.env.NODE_ENV !== 'production'
 
+  /**
+   * Creates a new CannotServeFileException instance.
+   *
+   * @param originalError - The original error that caused the file serving to fail
+   */
   constructor(originalError: any) {
     super('Cannot serve local file using drive', {
       code: 'E_CANNOT_SERVE_FILE',
@@ -29,6 +49,8 @@ export class CannotServeFileException extends Exception {
    * Returns the root cause of the error by reading
    * the nested "error.cause" property in recursive
    * manner.
+   *
+   * @param error - The error object to traverse
    */
   #getRootCause(error: unknown): any {
     if (error && typeof error === 'object' && 'cause' in error) {
@@ -40,6 +62,8 @@ export class CannotServeFileException extends Exception {
   /**
    * Parses the original error to find the accurate error
    * message, stack and the status code.
+   *
+   * @param error - The CannotServeFileException instance to parse
    */
   parseError(error: this) {
     const rootCause = this.#getRootCause(error)
@@ -54,6 +78,9 @@ export class CannotServeFileException extends Exception {
 
   /**
    * Converts error to an HTTP response.
+   *
+   * @param error - The CannotServeFileException instance to handle
+   * @param ctx - The HTTP context for the request
    */
   handle(error: this, ctx: HttpContext) {
     /**
@@ -71,6 +98,9 @@ export class CannotServeFileException extends Exception {
 
   /**
    * Reporting the error using the logger
+   *
+   * @param error - The CannotServeFileException instance to report
+   * @param ctx - The HTTP context for logging
    */
   report(error: this, ctx: HttpContext) {
     /**

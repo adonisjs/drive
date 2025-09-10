@@ -7,6 +7,12 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Re-export all types from flydrive core package.
+ * This includes types like DriveManagerOptions, Disk, ObjectVisibility, etc.
+ *
+ * @see {@link https://github.com/flydrive-js/core} - FlyDrive documentation
+ */
 export * from 'flydrive/types'
 
 import type { DriveManager } from 'flydrive'
@@ -16,6 +22,17 @@ import type { ApplicationService, ConfigProvider } from '@adonisjs/core/types'
 /**
  * Options accepted by the FSDriver registered by AdonisJS
  * using the config helpers.
+ *
+ * @example
+ * ```js
+ * const fsConfig = {
+ *   location: new URL('./uploads', import.meta.url),
+ *   visibility: 'public',
+ *   serveFiles: true,
+ *   routeBasePath: '/uploads',
+ *   appUrl: 'https://example.com'
+ * }
+ * ```
  */
 export type AdonisFSDriverOptions = {
   /**
@@ -71,45 +88,130 @@ export type AdonisFSDriverOptions = {
 
 /**
  * Service info that must be served via the AdonisJS
- * local HTTP server
+ * local HTTP server. Used to track which services need
+ * routes registered for file serving.
+ *
+ * @example
+ * ```js
+ * const serviceInfo = {
+ *   service: 'uploads',
+ *   routeName: 'drive.uploads.serve',
+ *   routePattern: '/uploads/*'
+ * }
+ * ```
  */
 export type ServiceWithLocalServer = {
+  /** The name of the drive service */
   service: string
+  /** The route name used for URL generation */
   routeName: string
+  /** The route pattern to match file requests */
   routePattern: string
 }
 
 /**
  * Representation of a factory function that returns
- * an instance of a driver.
+ * an instance of a driver. Used to create driver instances
+ * on demand.
+ *
+ * @example
+ * ```js
+ * const driverFactory = () => new FSDriver({
+ *   location: './uploads',
+ *   visibility: 'public'
+ * })
+ * ```
  */
 export type DriverFactory = () => DriverContract
 
 /**
  * Service config provider is an extension of the config
- * provider and accepts the name of the disk service
+ * provider and accepts the name of the disk service.
+ * Used to configure services that need access to the
+ * application instance during setup.
+ *
+ * @template Factory - The driver factory function type
+ *
+ * @example
+ * ```js
+ * const s3Provider = {
+ *   type: 'provider',
+ *   async resolver(name, app, locallyServed) {
+ *     const env = app.container.make('env')
+ *     return () => new S3Driver({
+ *       credentials: {
+ *         accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
+ *         secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY')
+ *       },
+ *       region: env.get('AWS_REGION'),
+ *       bucket: env.get('S3_BUCKET')
+ *     })
+ *   }
+ * }
+ * ```
  */
 export type ServiceConfigProvider<Factory extends DriverFactory> = {
+  /** Identifies this as a config provider */
   type: 'provider'
+  /** Function that resolves the driver factory with application context */
   resolver: (
+    /** The name of the service being configured */
     name: string,
+    /** The AdonisJS application instance */
     app: ApplicationService,
+    /** Array to track services that need local HTTP routes */
     locallyServed: ServiceWithLocalServer[]
   ) => Promise<Factory>
 }
 
 /**
  * A list of disks inferred using the config defined inside
- * the user-land application
+ * the user-land application. This interface is extended via
+ * declaration merging to provide type-safe disk names.
+ *
+ * @example
+ * ```js
+ * // In your config/drive.ts file
+ * declare module '@adonisjs/drive/types' {
+ *   interface DriveDisks {
+ *     uploads: () => FSDriver
+ *     s3: () => S3Driver
+ *   }
+ * }
+ *
+ * // Usage
+ * const disk = drive.use('uploads') // Type-safe!
+ * ```
  */
 export interface DriveDisks {}
+
+/**
+ * Utility type that infers the disk services configuration
+ * from a config provider type.
+ *
+ * @template T - The config provider type containing services
+ */
 export type InferDriveDisks<
   T extends ConfigProvider<{ config: { services: Record<string, DriverFactory> } }>,
 > = Awaited<ReturnType<T['resolver']>>['config']['services']
 
 /**
- * Drive service represents a singleton since of the DriveManager
- * configured using the "config/drive.ts" file.
+ * Drive service represents a singleton instance of the DriveManager
+ * configured using the "config/drive.ts" file. This is the main
+ * interface you interact with to access configured disks.
+ *
+ * @example
+ * ```js
+ * // Injecting drive service
+ * export default class FileController {
+ *   constructor(private drive: DriveService) {}
+ *
+ *   async upload({ request }) {
+ *     const file = request.file('avatar')
+ *     await this.drive.use().put(file.clientName, file.tmpPath)
+ *   }
+ * }
+ * ```
  */
 export interface DriveService
   extends DriveManager<DriveDisks extends Record<string, DriverFactory> ? DriveDisks : never> {}

@@ -11,8 +11,8 @@ import { test } from '@japa/runner'
 import { Exception } from '@adonisjs/core/exceptions'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
 
-import { createHttpContext } './helpers.ts'
-import { CannotServeFileException } '../src/errors.ts'
+import { createHttpContext } from './helpers.ts'
+import { CannotServeFileException } from '../src/errors.ts'
 
 test.group('CannotServeFileException | parseError', () => {
   test('parse error cause', ({ assert }) => {

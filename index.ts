@@ -8,7 +8,7 @@
  */
 
 export * from 'flydrive'
-export * as errors './src/errors.ts'
-export { configure } './configure.ts'
-export { stubsRoot } './stubs/main.ts'
-export { defineConfig, services } './src/define_config.ts'
+export * as errors from './src/errors.ts'
+export { configure } from './configure.ts'
+export { stubsRoot } from './stubs/main.ts'
+export { defineConfig, services } from './src/define_config.ts'

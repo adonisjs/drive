@@ -10,9 +10,14 @@
 import type { Disk } from 'flydrive'
 import type { HttpContext } from '@adonisjs/core/http'
 
-import debug './debug.ts'
-import { CannotServeFileException } './errors.ts'
+import debug from './debug.ts'
+import { CannotServeFileException } from './errors.ts'
 
+/**
+ * Safely decodes a URI component, returning the original string if decoding fails.
+ *
+ * @param location - The URI-encoded location string to decode
+ */
 function decodeLocation(location: string): string {
   try {
     return decodeURIComponent(location)
@@ -24,8 +29,28 @@ function decodeLocation(location: string): string {
 /**
  * Returns a file server function that can be registered as
  * a route to serve files from a specific disk instance.
+ *
+ * @param disk - The FlyDrive disk instance to serve files from
+ *
+ * @example
+ * ```js
+ * // Register the file server in routes
+ * import drive from '@adonisjs/drive/services/main'
+ *
+ * const disk = drive.use('local')
+ * const fileServer = createFileServer(disk)
+ *
+ * router.get('/uploads/*', fileServer)
+ * ```
  */
 export function createFileServer(disk: Disk) {
+  /**
+   * HTTP handler function that serves files from the disk.
+   *
+   * @param ctx - The HTTP context containing request and response objects
+   * @param ctx.request - The HTTP request object
+   * @param ctx.response - The HTTP response object
+   */
   return async function ({ request, response }: HttpContext) {
     const location = decodeLocation(request.param('*').join('/'))
 

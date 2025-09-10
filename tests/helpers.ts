@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { type HttpContext, Router } from '@adonisjs/core/http'
 import { AppFactory } from '@adonisjs/core/factories/app'
-import { type IncomingMessage, type ServerResponse } from 'node:http'
+import { type HttpContext, Router } from '@adonisjs/core/http'
 import type { ApplicationService } from '@adonisjs/core/types'
+import { type IncomingMessage, type ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/core/factories/encryption'
 import {
   RequestFactory,
@@ -19,10 +19,10 @@ import {
   HttpContextFactory,
 } from '@adonisjs/core/factories/http'
 
-import { Disk } '../index.ts'
-import { FSDriver } '../drivers/fs/main.ts'
-import type { AdonisFSDriverOptions } '../src/types.ts'
-import type { FSDriverOptions } '../drivers/fs/types.ts'
+import { Disk } from '../index.ts'
+import { FSDriver } from '../drivers/fs/main.ts'
+import type { AdonisFSDriverOptions } from '../src/types.ts'
+import type { FSDriverOptions } from '../drivers/fs/types.ts'
 
 export const BASE_URL = new URL('./', import.meta.url)
 const qs = new QsParserFactory().create()
