@@ -8,7 +8,7 @@
  */
 
 import string from '@adonisjs/core/helpers/string'
-import ConfigureCommand from '@adonisjs/core/commands/configure'
+import type ConfigureCommand from '@adonisjs/core/commands/configure'
 import { stubsRoot } from './stubs/main.js'
 
 /**

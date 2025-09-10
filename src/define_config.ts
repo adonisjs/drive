@@ -18,6 +18,7 @@ import type { FSDriverOptions } from 'flydrive/drivers/fs/types'
 import type { S3DriverOptions } from 'flydrive/drivers/s3/types'
 import type { GCSDriverOptions } from 'flydrive/drivers/gcs/types'
 
+import debug from './debug.js'
 import { createURLBuilder } from './url_builder.js'
 import type {
   DriverFactory,
@@ -26,7 +27,6 @@ import type {
   ServiceWithLocalServer,
   DriveManagerOptions,
 } from './types.js'
-import debug from './debug.js'
 
 /**
  * Helper to remap known drive services to factory functions

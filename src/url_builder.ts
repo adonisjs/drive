@@ -23,22 +23,28 @@ export function createURLBuilder(
 
   return {
     async generateURL(key) {
-      return router
-        .builder()
-        .params({ '*': key.split('/') })
-        .prefixUrl(prefixUrl)
-        .make(routeName)
+      return (router.urlBuilder.urlFor as any)(
+        routeName,
+        { '*': key.split('/') },
+        {
+          prefixUrl: prefixUrl,
+        }
+      )
+    },
+    async generateSignedUploadURL() {
+      throw new Error('')
     },
     async generateSignedURL(key, _, options) {
       const { expiresIn, ...headers } = options
-      return router
-        .builder()
-        .qs(headers)
-        .params({ '*': key.split('/') })
-        .prefixUrl(prefixUrl)
-        .makeSigned(routeName, {
+      return (router.urlBuilder.signedUrlFor as any)(
+        routeName,
+        { '*': key.split('/') },
+        {
+          qs: headers,
           expiresIn,
-        })
+          prefixUrl: prefixUrl,
+        }
+      )
     },
   }
 }

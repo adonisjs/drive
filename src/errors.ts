@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { HttpContext } from '@adonisjs/core/http'
+import { type HttpContext } from '@adonisjs/core/http'
 import { Exception } from '@adonisjs/core/exceptions'
 
 /**

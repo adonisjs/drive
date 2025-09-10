@@ -24,13 +24,13 @@ test.group('CannotServeFileException | parseError', () => {
 
   test('parse nested error cause', async ({ assert }) => {
     // @ts-expect-error
-    const parseError = await import('node:url').then((url) => url.parse(() => {})).catch((e) => e)
+    const parseError = await import('node:url').then((url) => new url.URL()).catch((e) => e)
 
     const error = new CannotServeFileException(
       new Error('Something went wrong', { cause: parseError })
     )
     const { message, status } = error.parseError(error)
-    assert.equal(message, 'The "url" argument must be of type string. Received function ')
+    assert.equal(message, 'The "url" argument must be specified')
     assert.equal(status, 500)
   })
 

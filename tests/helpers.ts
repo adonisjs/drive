@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { HttpContext, Router } from '@adonisjs/core/http'
+import { type HttpContext, Router } from '@adonisjs/core/http'
 import { AppFactory } from '@adonisjs/core/factories/app'
-import { IncomingMessage, ServerResponse } from 'node:http'
+import { type IncomingMessage, type ServerResponse } from 'node:http'
 import type { ApplicationService } from '@adonisjs/core/types'
 import { EncryptionFactory } from '@adonisjs/core/factories/encryption'
 import {

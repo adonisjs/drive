@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import type { Disk } from 'flydrive'
 import type { HttpContext } from '@adonisjs/core/http'
 
 import debug from './debug.js'
-import type { Disk } from '../index.js'
 import { CannotServeFileException } from './errors.js'
 
 function decodeLocation(location: string): string {
