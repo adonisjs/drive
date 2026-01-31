@@ -213,5 +213,6 @@ export type InferDriveDisks<
  * }
  * ```
  */
-export interface DriveService
-  extends DriveManager<DriveDisks extends Record<string, DriverFactory> ? DriveDisks : never> {}
+export interface DriveService extends DriveManager<
+  DriveDisks extends Record<string, DriverFactory> ? DriveDisks : never
+> {}
