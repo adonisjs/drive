@@ -58,10 +58,25 @@ const STORAGE_SERVICES = {
   gcs: {
     name: 'Google Cloud Storage',
     env: [
-      { name: 'GCS_KEY', value: 'file://./gcs_key.json', schema: 'Env.schema.string()' },
+      { name: 'GCS_KEY', value: 'file://gcs_key.json', schema: 'Env.schema.string()' },
       { name: 'GCS_BUCKET', value: '', schema: 'Env.schema.string()' },
     ],
     dependencies: ['@google-cloud/storage'],
+  },
+  supabase: {
+    name: 'Supabase Storage',
+    env: [
+      { name: 'SUPABASE_STORAGE_KEY', value: '', schema: 'Env.schema.string()' },
+      { name: 'SUPABASE_STORAGE_SECRET', value: '', schema: 'Env.schema.string()' },
+      { name: 'SUPABASE_STORAGE_REGION', value: '', schema: 'Env.schema.string()' },
+      { name: 'SUPABASE_STORAGE_BUCKET', value: '', schema: 'Env.schema.string()' },
+      {
+        name: 'SUPABASE_ENDPOINT',
+        value: '',
+        schema: 'Env.schema.string()',
+      },
+    ],
+    dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
 }
 

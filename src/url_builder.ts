@@ -57,7 +57,7 @@ export function createURLBuilder(
      * Generates a signed upload URL. Not implemented for FS driver.
      */
     async generateSignedUploadURL() {
-      throw new Error('')
+      throw new Error('Signed uploads are not supported by the FS driver')
     },
     /**
      * Generates a signed URL for private file access.

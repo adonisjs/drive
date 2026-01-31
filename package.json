@@ -79,7 +79,8 @@
     "@adonisjs/core": "^7.0.0-next.0",
     "@aws-sdk/client-s3": "^3.884.0",
     "@aws-sdk/s3-request-presigner": "^3.884.0",
-    "@google-cloud/storage": "^7.17.0"
+    "@google-cloud/storage": "^7.17.0",
+    "edge.js": "^6.4.0"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-s3": {
@@ -92,6 +93,9 @@
       "optional": true
     },
     "@adonisjs/assembler": {
+      "optional": true
+    },
+    "edge.js": {
       "optional": true
     }
   },
