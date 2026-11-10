@@ -78,6 +78,17 @@ const STORAGE_SERVICES = {
     ],
     dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   },
+  neon: {
+    name: 'Neon Object Storage',
+    env: [
+      { name: 'NEON_STORAGE_KEY', value: '', schema: 'Env.schema.string()' },
+      { name: 'NEON_STORAGE_SECRET', value: '', schema: 'Env.schema.string()' },
+      { name: 'NEON_STORAGE_REGION', value: '', schema: 'Env.schema.string()' },
+      { name: 'NEON_STORAGE_BUCKET', value: '', schema: 'Env.schema.string()' },
+      { name: 'NEON_STORAGE_ENDPOINT', value: '', schema: 'Env.schema.string()' },
+    ],
+    dependencies: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
+  },
 }
 
 /**
