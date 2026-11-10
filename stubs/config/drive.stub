@@ -52,6 +52,18 @@ const driveConfig = defineConfig({
       credentials: env.get('GCS_KEY'),
       bucket: env.get('GCS_BUCKET'),
       visibility: 'public',
+    }),{{/if}}{{#if services.includes('neon')}}
+    neon: services.s3({
+      credentials: {
+        accessKeyId: env.get('NEON_STORAGE_KEY'),
+        secretAccessKey: env.get('NEON_STORAGE_SECRET'),
+      },
+      region: env.get('NEON_STORAGE_REGION'),
+      bucket: env.get('NEON_STORAGE_BUCKET'),
+      endpoint: env.get('NEON_STORAGE_ENDPOINT'),
+      forcePathStyle: true,
+      supportsACL: false,
+      visibility: 'public',
     }),{{/if}}
   },
 })

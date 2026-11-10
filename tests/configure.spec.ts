@@ -226,6 +226,68 @@ test.group('Configure', (group) => {
     ])
   })
 
+  test('configure neon service', async ({ fs, assert }) => {
+    const ignitor = new IgnitorFactory()
+      .withCoreProviders()
+      .withCoreConfig()
+      .create(fs.baseUrl, {
+        importer: (filePath) => {
+          if (filePath.startsWith('./') || filePath.startsWith('../')) {
+            return import(new URL(filePath, fs.baseUrl).href)
+          }
+          return import(filePath)
+        },
+      })
+
+    const app = ignitor.createApp('web')
+    await app.init()
+    await app.boot()
+
+    await fs.create('.env', '')
+    await fs.createJson('tsconfig.json', {})
+    await fs.createJson('package.json', {})
+    await fs.create('start/env.ts', `export default Env.create(new URL('./'), {})`)
+    await fs.create('adonisrc.ts', `export default defineConfig({})`)
+
+    const ace = await app.container.make('ace')
+    const command = await ace.create(Configure, ['../../index.js', '--services=neon', '--install'])
+    await command.exec()
+
+    await assert.fileContains('.env', [
+      'DRIVE_DISK=neon',
+      'NEON_STORAGE_KEY',
+      'NEON_STORAGE_SECRET',
+      'NEON_STORAGE_REGION',
+      'NEON_STORAGE_BUCKET',
+      'NEON_STORAGE_ENDPOINT',
+    ])
+    await assert.fileContains('start/env.ts', [
+      `DRIVE_DISK: Env.schema.enum(['neon'] as const)`,
+      'NEON_STORAGE_KEY: Env.schema.string()',
+      'NEON_STORAGE_SECRET: Env.schema.string()',
+      'NEON_STORAGE_REGION: Env.schema.string()',
+      'NEON_STORAGE_BUCKET: Env.schema.string()',
+      'NEON_STORAGE_ENDPOINT: Env.schema.string()',
+    ])
+
+    await assert.fileContains(
+      'config/drive.ts',
+      `
+    neon: services.s3({
+      credentials: {
+        accessKeyId: env.get('NEON_STORAGE_KEY'),
+        secretAccessKey: env.get('NEON_STORAGE_SECRET'),
+      },
+      region: env.get('NEON_STORAGE_REGION'),
+      bucket: env.get('NEON_STORAGE_BUCKET'),
+      endpoint: env.get('NEON_STORAGE_ENDPOINT'),
+      forcePathStyle: true,
+      supportsACL: false,
+      visibility: 'public',
+    }),`
+    )
+  })
+
   test('print error when trying to configure an unknown service', async ({ fs }) => {
     const ignitor = new IgnitorFactory()
       .withCoreProviders()
