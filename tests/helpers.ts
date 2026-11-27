@@ -74,7 +74,7 @@ export function createRouteHandler(forFile: string, originalHandler: (ctx: HttpC
     ctx.params = { '*': [forFile] }
     try {
       await originalHandler(ctx)
-    } catch (error) {
+    } catch (error: any) {
       if (typeof error.handle === 'function') {
         await error.handle(error, ctx)
       } else {
