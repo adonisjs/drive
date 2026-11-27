@@ -90,9 +90,8 @@ export async function configure(command: ConfigureCommand) {
    * Read services from the "--services" CLI flag
    */
   let selectedServices:
-    | keyof typeof STORAGE_SERVICES
-    | (keyof typeof STORAGE_SERVICES)[]
-    | undefined = command.parsedFlags.services
+    keyof typeof STORAGE_SERVICES | (keyof typeof STORAGE_SERVICES)[] | undefined =
+    command.parsedFlags.services
 
   /**
    * Should dependencies be installed
